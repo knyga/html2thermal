@@ -23,66 +23,66 @@ me
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  it('understands special commands', function() {
-    const template = `
-#!/bold true
-I am bold
-#!/bold false
-I am not
-`;
+//   it('understands special commands', function() {
+//     const template = `
+// #!/bold true
+// I am bold
+// #!/bold false
+// I am not
+// `;
+//
+//     const exptectedResult = [
+//       {name: 'newLine'},
+//       {name: 'bold', data: true},
+//       {name: 'println', data: 'I am bold'},
+//       {name: 'bold', data: false},
+//       {name: 'println', data: 'I am not'},
+//       {name: 'newLine'},
+//     ];
+//
+//     assert(_.isEqual(convert(template), exptectedResult));
+//   });
 
-    const exptectedResult = [
-      {name: 'newLine'},
-      {name: 'bold', data: true},
-      {name: 'println', data: 'I am bold'},
-      {name: 'bold', data: false},
-      {name: 'println', data: 'I am not'},
-      {name: 'newLine'},
-    ];
-
-    assert(_.isEqual(convert(template), exptectedResult));
-  });
-
-  it('accepts scope and works with mustache template engine', function() {
-    const template = `
-Dear {{client}},
-Order details:
-Calories: {{calories}}.
-Items:
-{{#items}}
-* {{name}}, x{{factor}}
-{{/items}}
-
-Thank you for ordering our product.
-`;
-
-    const scope = {
-      client: 'Oleksandr',
-      calories: 2000,
-      items: [
-        {name: 'Sandwich', factor: 1},
-        {name: 'Soup', factor: 1.5},
-      ]
-    };
-
-    const exptectedResult = [
-      {name: 'newLine'},
-      {name: 'println', data: 'Dear Oleksandr,'},
-      {name: 'println', data: 'Order details:'},
-      {name: 'println', data: 'Calories: 2000.'},
-      {name: 'println', data: 'Items:'},
-      {name: 'println', data: '* Sandwich, x1'},
-      {name: 'println', data: '* Soup, x1.5'},
-      {name: 'newLine'},
-      {name: 'println', data: 'Thank you for ordering our product.'},
-      {name: 'newLine'},
-    ];
-
-    assert(_.isEqual(convert(template, scope), exptectedResult));
-  });
+//   it('accepts scope and works with mustache template engine', function() {
+//     const template = `
+// Dear {{client}},
+// Order details:
+// Calories: {{calories}}.
+// Items:
+// {{#items}}
+// * {{name}}, x{{factor}}
+// {{/items}}
+//
+// Thank you for ordering our product.
+// `;
+//
+//     const scope = {
+//       client: 'Oleksandr',
+//       calories: 2000,
+//       items: [
+//         {name: 'Sandwich', factor: 1},
+//         {name: 'Soup', factor: 1.5},
+//       ]
+//     };
+//
+//     const exptectedResult = [
+//       {name: 'newLine'},
+//       {name: 'println', data: 'Dear Oleksandr,'},
+//       {name: 'println', data: 'Order details:'},
+//       {name: 'println', data: 'Calories: 2000.'},
+//       {name: 'println', data: 'Items:'},
+//       {name: 'println', data: '* Sandwich, x1'},
+//       {name: 'println', data: '* Soup, x1.5'},
+//       {name: 'newLine'},
+//       {name: 'println', data: 'Thank you for ordering our product.'},
+//       {name: 'newLine'},
+//     ];
+//
+//     assert(_.isEqual(convert(template, scope), exptectedResult));
+//   });
 
   it('has special treatment for left/right', function() {
-    const template = `I am on LEFT<|>I am on RIGHT`;
+    const template = `<left>I am on LEFT</left><right>I am on RIGHT</right>`;
 
     const exptectedResult = [
       {name: 'leftRight', data: ['I am on LEFT', 'I am on RIGHT']},
@@ -92,7 +92,7 @@ Thank you for ordering our product.
   });
 
   it('has special treatment for simple table', function() {
-    const template = `One<||>Two<||>Three
+    const template = `<td>One</td><td>Two</td><td>Three</td>
 `;
 
     const exptectedResult = [
@@ -120,7 +120,7 @@ Me tooo
     ];
 
     assert(_.isEqual(convert(template), exptectedResult));
-  })
+  });
 
   it('can make words bold (advanced)', function() {
     const template = `
@@ -154,6 +154,8 @@ Me tooo
       ];
 
     assert(_.isEqual(convert(template), exptectedResult));
-  })
+  });
+
+  
 
 });
