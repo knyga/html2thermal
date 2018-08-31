@@ -103,6 +103,22 @@ me
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
+  it('has special treatment for table with attributes', function() {
+    const template = `<td width="0.5" align="left">Left</td><td width="0.25" align="center" bold="true">Center</td><td width="0.25" align="right">Right</td>
+`;
+
+    const exptectedResult = [
+      {name: 'tableCustom', data: [
+        { text:"Left", align:"left", width:0.5 },
+        { text:"Center", align:"center", width:0.25, bold:true },
+        { text:"Right", align:"right", width:0.25 }
+      ]},
+      {name: 'newLine'},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
   it('can make words bold (simple)', function() {
     const template = `
 Hello <b>OOOHHHHHOOOOO</b> and I am not bold
@@ -156,6 +172,14 @@ Me tooo
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  
-
+  // attributes for table
+  // general tags
+  // code128
+  // qr
+  // image
+  // getWidth??
+  // center
+  // left
+  // right
+  // remove mustache - outside of the convert
 });

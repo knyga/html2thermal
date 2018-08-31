@@ -1,5 +1,23 @@
 const mustache = require('mustache');
 const _ = require('lodash');
+const {parseString} = require('xml2js');
+
+const convertType = function(value) {
+  if(value === "true") {
+    return true;
+  }
+
+  if(value === "false") {
+    return false;
+  }
+
+  const number = Number.parseFloat(value);
+  if(!isNaN(number)) {
+    return number;
+  }
+
+  return value;
+};
 
 const boldHandler = function(raw, prevCommand) {
   if(!raw.includes('<b>') || !raw.includes('</b>')) {
@@ -96,11 +114,43 @@ const tableHandler = function(raw) {
   return [{name: 'table', data: cells}];
 };
 
+const tableCustomHandler = function(raw) {
+  if(!/<td [^>]+>/.test(raw)) {
+    return null;
+  }
+
+  let err;
+  let result;
+
+  parseString(`<xml>${raw}</xml>`, function (errArg, resultArg) {
+    err = errArg;
+    result = resultArg;
+  });
+
+  if(err) {
+    return null;
+  }
+
+  if(result && result.xml) {
+    const data = [];
+    const {td: tds} = result.xml;
+    for(let i=0; i<tds.length; i++) {
+      const td = tds[i];
+      const formattedProperties = _.mapValues(_.keyBy(
+        Object.keys(td.$).map(name => ({name, value: convertType(td.$[name])})),
+      'name'), 'value');
+      data.push({text: td._, ...formattedProperties});
+    }
+
+    return [{name: 'tableCustom', data}];
+  }
+};
 
 const getCommandFromRaw = function(raw, prevCommand) {
   const handlers = [
     boldHandler,
     leftRightHandler,
+    tableCustomHandler,
     tableHandler,
     printLineHandler,
     emptyLineHandler,
