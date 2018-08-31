@@ -1,0 +1,28 @@
+{
+  "name": "node-termal-printer-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/knyga/node-termal-printer-template.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/knyga/node-termal-printer-template/issues"
+  },
+  "homepage": "https://github.com/knyga/node-termal-printer-template#readme",
+  "dependencies": {
+    "mustache": "^2.3.2",
+    "node-thermal-printer": "^2.0.0",
+    "lodash": "^4.17.10"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  }
+}
