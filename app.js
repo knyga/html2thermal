@@ -6,24 +6,16 @@ printer.init({
 });
 
 const template = `
-I am not
-#!/bold 1
-I am bold
+Hello <b>OOOHHHHHOOOOO</b> and I am not bold
+Lets <b>da</b>ne<b>ce</b>!<b>!</b> and I am not bold
+Me tooo
 `;
 
 function executePrinterCommands(commands) {
-  // for(let i=0;i<commands.length;i++) {
-  //   const command = commands[i];
-  //   if(command.data) {
-  //     printer[command.name](command.data);
-  //   }
-  // }
-
-  printer.println('Hello ');
-  printer.bold(true);
-  printer.println('OOOHHHHOOOHHHOOO ');
-  printer.setTextNormal();
-  printer.println('and I am not bold');
+  for(let i=0;i<commands.length;i++) {
+    const command = commands[i];
+    printer[command.name](command.data);
+  }
 
   printer.cut();
   printer.execute(function(err){
