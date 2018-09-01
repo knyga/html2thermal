@@ -18,9 +18,11 @@
   },
   "homepage": "https://github.com/knyga/node-termal-printer-template#readme",
   "dependencies": {
+    "libxmljs": "^0.19.5",
     "lodash": "^4.17.10",
     "mustache": "^2.3.2",
     "node-thermal-printer": "^2.0.0",
+    "sanitize-html": "^1.18.4",
     "xml2js": "^0.4.19"
   },
   "devDependencies": {

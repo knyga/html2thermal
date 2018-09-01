@@ -1,178 +1,89 @@
-const mustache = require('mustache');
 const _ = require('lodash');
-const {parseString} = require('xml2js');
+const sanitizeHtml = require('sanitize-html');
+const {parseXml} = require('libxmljs');
 
-const convertType = function(value) {
-  if(value === "true") {
-    return true;
-  }
-
-  if(value === "false") {
-    return false;
-  }
-
-  const number = Number.parseFloat(value);
-  if(!isNaN(number)) {
-    return number;
-  }
-
-  return value;
-};
-
-const boldHandler = function(raw, prevCommand) {
-  if(!raw.includes('<b>') || !raw.includes('</b>')) {
-    return null;
-  }
-
-  const lineCommands = raw.split(/(<b>|<\/b>)/).map(item => {
-    if(item === '<b>') {
-      return {name: 'bold', data: true};
-    }
-
-    if(item === '</b>') {
-      return {name: 'bold', data: false};
-    }
-
-    return {name: 'print', data: item};
-  });
-  const isNewLineNeeded = prevCommand ? !['println', 'newLine', 'table', 'leftRight'].includes(prevCommand.name) : false;
-
-  if(isNewLineNeeded) {
-    return [{name: 'newLine'}].concat(lineCommands);
-  }
-
-  return lineCommands;
-};
-
-const emptyLineHandler = function(raw) {
-  if(/^\s*$/.test(raw)) {
-    return [{name: 'newLine'}];
+const getTag = (node) => {
+  const match = node.toString().match(/^<([^>\/]+)\/?>/);
+  if(match && match.length > 0) {
+    return match[1];
   }
 
   return null;
 };
-
-const printLineHandler = function(raw) {
-  if(/^\s*$/.test(raw)) {
-    return null;
-  }
-
-  return [{name: 'println', data: raw}];
+const checkIsNestedTagsPresent = (node) => {
+  const result = node.toString().match(/<[^>]+>/g);
+  return result ? result.length > 2 : false;
 };
 
-const leftRightHandler = function(raw) {
-  if(!raw.includes('<left>') || !raw.includes('</left>') || !raw.includes('<right>') || !raw.includes('</right>')) {
-    return null;
+const convert = (xml) => {
+  const root = parseXml(`<?xml version="1.0" encoding="UTF-8"?><root>${xml.replace(/\n/g, '')}</root>`, {noblanks: true}).root();
+  const nodes = root.childNodes();
+  const commands = [];
+  const context = {data: [], isFontA: true, isBold: false, isTable: false};
+  const process = (node, depth) => {
+    const tag = getTag(node);
+    const innerNodes = node.childNodes();
+    const isHasNestedTagsPresent = checkIsNestedTagsPresent(node);
+
+    if(tag === 'fonta' && !context.isFontA) {
+      commands.push({name: 'setTypeFontA'});
+      context.isFontA = true;
+    } else if(tag === 'fontb' && context.isFontA) {
+      commands.push({name: 'setTypeFontB'});
+      context.isFontA = false;
+    } else if(tag === 'b' && !context.isBold) {
+      commands.push({name: 'bold', data: true});
+      context.isBold = true;
+    } else if(['p', 'div'].includes(tag) && !isHasNestedTagsPresent) {
+      commands.push({name: 'println', data: node.text()});
+      return;
+    } else if(tag === 'tr') {
+      context.isTable = true;
+    }
+
+    for(let i=0; i<innerNodes.length; i++) {
+      const innerNode = innerNodes[i];
+      process(innerNode, depth+1);
+    }
+
+    if(tag === 'fonta' && context.isFontA) {
+      commands.push({name: 'setTypeFontB'});
+      context.isFontA = false;
+    } else if(tag === 'fontb' && !context.isFontA) {
+      commands.push({name: 'setTypeFontA'});
+      context.isFontA = true;
+    } else if(tag === 'b' && context.isBold) {
+      commands.push({name: 'bold', data: false});
+      context.isBold = false;
+    } else if(tag === 'tr') {
+      commands.push({name: 'table', data: context.data});
+      context.data = [];
+      context.isTable = false;
+    } else if(tag === 'td') {
+      context.data.push(node.text());
+    } else if(tag === 'br') {
+      commands.push({name: 'newLine'});
+    } else if(depth > 0 && !context.isTable) {
+      commands.push({name: 'print', data: node.text()});
+    } else if(!isHasNestedTagsPresent && !context.isTable) {
+      commands.push({name: 'println', data: node.text()});
+    }
+  };
+
+  for(let i=0; i<nodes.length; i++) {
+    const node = nodes[i];
+    process(node, 0);
   }
 
-  let leftText = '';
-  let rightText = '';
-  const parts = raw.split(/(<left>|<\/left>|<right>|<\/right>)/);
-  for(let i=1, nextType=''; i<parts.length-1; i++) {
-    const item = parts[i];
-    if(['</left>', '</right>'].includes(item)) {
-      nextType = '';
-      continue;
-    }
-
-    if(item === '<left>') {
-      nextType = 'left';
-      continue;
-    }
-
-    if(item === '<right>') {
-      nextType = 'right';
-      continue;
-    }
-
-    if(nextType === 'left') {
-      leftText = item;
-    }
-
-    rightText = item;
-  }
-
-  return [{name: 'leftRight', data: [leftText, rightText]}];
+  return commands;
 };
 
-const tableHandler = function(raw) {
-  if(!raw.includes('<td>') || !raw.includes('</td>')) {
-    return null;
-  }
-
-  const cells = [];
-  const parts = raw.split(/(<td>|<\/td>)/);
-  for(let i=1; i<parts.length-1; i++) {
-    const item = parts[i];
-    switch(item) {
-      case '<td>': continue;
-      case '</td>': i++; continue;
-      default: cells.push(item);
-    }
-  }
-
-  return [{name: 'table', data: cells}];
-};
-
-const tableCustomHandler = function(raw) {
-  if(!/<td [^>]+>/.test(raw)) {
-    return null;
-  }
-
-  let err;
-  let result;
-
-  parseString(`<xml>${raw}</xml>`, function (errArg, resultArg) {
-    err = errArg;
-    result = resultArg;
+module.exports = function(dirtyXml) {
+  const cleanXml = sanitizeHtml(dirtyXml, {
+    allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta' ],
   });
 
-  if(err) {
-    return null;
-  }
-
-  if(result && result.xml) {
-    const data = [];
-    const {td: tds} = result.xml;
-    for(let i=0; i<tds.length; i++) {
-      const td = tds[i];
-      const formattedProperties = _.mapValues(_.keyBy(
-        Object.keys(td.$).map(name => ({name, value: convertType(td.$[name])})),
-      'name'), 'value');
-      data.push({text: td._, ...formattedProperties});
-    }
-
-    return [{name: 'tableCustom', data}];
-  }
-};
-
-const getCommandFromRaw = function(raw, prevCommand) {
-  const handlers = [
-    boldHandler,
-    leftRightHandler,
-    tableCustomHandler,
-    tableHandler,
-    printLineHandler,
-    emptyLineHandler,
-  ];
-
-  for(let i=0; i<handlers.length; i++) {
-    const result = handlers[i](raw, prevCommand);
-    if(result !== null) {
-      return result;
-    }
-  }
-
-  return [];
-};
-
-module.exports = function convert(template, scope) {
-  const raws = mustache.render(template, scope).split('\n');
-  const commands = [];
-  for(let i=0; i<raws.length; i++) {
-    const raw = raws[i];
-    commands.push(getCommandFromRaw(raw, i>0 ? raws[i-1] : undefined));
-  }
-
-  return _.flatten(commands);
+  const result = convert(cleanXml);
+  console.log(result);
+  return result;
 };

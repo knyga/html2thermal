@@ -12,96 +12,90 @@ me
 `;
 
     const exptectedResult = [
-      {name: 'newLine'},
-      {name: 'println', data: 'hello world'},
-      {name: 'println', data: 'it is'},
-      {name: 'println', data: 'me'},
-      {name: 'println', data: 'me'},
-      {name: 'newLine'},
+      {name: 'println', data: 'hello worldit ismeme'},
     ];
 
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-//   it('understands special commands', function() {
-//     const template = `
-// #!/bold true
-// I am bold
-// #!/bold false
-// I am not
-// `;
-//
-//     const exptectedResult = [
-//       {name: 'newLine'},
-//       {name: 'bold', data: true},
-//       {name: 'println', data: 'I am bold'},
-//       {name: 'bold', data: false},
-//       {name: 'println', data: 'I am not'},
-//       {name: 'newLine'},
-//     ];
-//
-//     assert(_.isEqual(convert(template), exptectedResult));
-//   });
-
-//   it('accepts scope and works with mustache template engine', function() {
-//     const template = `
-// Dear {{client}},
-// Order details:
-// Calories: {{calories}}.
-// Items:
-// {{#items}}
-// * {{name}}, x{{factor}}
-// {{/items}}
-//
-// Thank you for ordering our product.
-// `;
-//
-//     const scope = {
-//       client: 'Oleksandr',
-//       calories: 2000,
-//       items: [
-//         {name: 'Sandwich', factor: 1},
-//         {name: 'Soup', factor: 1.5},
-//       ]
-//     };
-//
-//     const exptectedResult = [
-//       {name: 'newLine'},
-//       {name: 'println', data: 'Dear Oleksandr,'},
-//       {name: 'println', data: 'Order details:'},
-//       {name: 'println', data: 'Calories: 2000.'},
-//       {name: 'println', data: 'Items:'},
-//       {name: 'println', data: '* Sandwich, x1'},
-//       {name: 'println', data: '* Soup, x1.5'},
-//       {name: 'newLine'},
-//       {name: 'println', data: 'Thank you for ordering our product.'},
-//       {name: 'newLine'},
-//     ];
-//
-//     assert(_.isEqual(convert(template, scope), exptectedResult));
-//   });
-
-  it('has special treatment for left/right', function() {
-    const template = `<left>I am on LEFT</left><right>I am on RIGHT</right>`;
-
-    const exptectedResult = [
-      {name: 'leftRight', data: ['I am on LEFT', 'I am on RIGHT']},
-    ];
-
-    assert(_.isEqual(convert(template), exptectedResult));
-  });
-
-  it('has special treatment for simple table', function() {
-    const template = `<td>One</td><td>Two</td><td>Three</td>
+  it('understands multiple lines', function() {
+    const template = `
+<div>hello world</div>
+<p>it is</p>
+<p>me
+me</p>
 `;
 
     const exptectedResult = [
-      {name: 'table', data: ['One', 'Two', 'Three']},
-      {name: 'newLine'},
+      {name: 'println', data: 'hello world'},
+      {name: 'println', data: 'it is'},
+      {name: 'println', data: 'meme'},
     ];
 
     assert(_.isEqual(convert(template), exptectedResult));
   });
+
+
+  it('has special treatment for simple table', function() {
+    const template = `
+<table>
+<tr><td>One</td><td>Two</td><td>Three</td></tr>
+</table>
+`;
+
+    const exptectedResult = [{name: 'table', data: ['One', 'Two', 'Three']}];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
+  it('understands blank lines', function() {
+    assert(_.isEqual(convert(`<br/>`), [{name: 'newLine'}]));
+    assert(_.isEqual(convert(`<br/><br>`), [{name: 'newLine'}, {name: 'newLine'}]));
+    assert(_.isEqual(convert(`<p>ho-ho</p><br/><br><p>ha-ha</p>`),
+      [{name: 'println', data: 'ho-ho'}, {name: 'newLine'}, {name: 'newLine'}, {name: 'println', data: 'ha-ha'}]));
+  });
+
+  it('can make words bold (simple)', function() {
+    const template = `
+<p>Hello <b>OOOHHHHHOOOOO</b> and I am not bold</p>
+<p>Me tooo</p>
+`;
+    const exptectedResult = [
+      {name: 'print', data: 'Hello '},
+      {name: 'bold', data: true },
+      {name: 'print', data: 'OOOHHHHHOOOOO'},
+      {name: 'bold', data: false },
+      {name: 'print', data: ' and I am not bold'},
+      {name: 'println', data: 'Me tooo'},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
+  it('works with nested styling', function() {
+    const template = `
+<p>Hello <fontb><b>OOO<fonta>HHHHH</fonta>OOOOO</b></fontb> and I am not bold</p>
+<p>Me tooo</p>
+`;
+    const exptectedResult = [
+      {name: 'print', data: 'Hello '},
+      {name: 'setTypeFontB'},
+      {name: 'bold', data: true },
+      {name: 'print', data: 'OOO'},
+      {name: 'setTypeFontA'},
+      {name: 'print', data: 'HHHHH'},
+      {name: 'setTypeFontB'},
+      {name: 'print', data: 'OOOOO'},
+      {name: 'bold', data: false },
+      {name: 'setTypeFontA'},
+      {name: 'print', data: ' and I am not bold'},
+      {name: 'println', data: 'Me tooo'},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
+  /*
 
   it('has special treatment for table with attributes', function() {
     const template = `<td width="0.5" align="left">Left</td><td width="0.25" align="center" bold="true">Center</td><td width="0.25" align="right">Right</td>
@@ -113,25 +107,6 @@ me
         { text:"Center", align:"center", width:0.25, bold:true },
         { text:"Right", align:"right", width:0.25 }
       ]},
-      {name: 'newLine'},
-    ];
-
-    assert(_.isEqual(convert(template), exptectedResult));
-  });
-
-  it('can make words bold (simple)', function() {
-    const template = `
-Hello <b>OOOHHHHHOOOOO</b> and I am not bold
-Me tooo
-`;
-    const exptectedResult = [
-      {name: 'newLine'},
-      {name: 'print', data: 'Hello '},
-      {name: 'bold', data: true },
-      {name: 'print', data: 'OOOHHHHHOOOOO'},
-      {name: 'bold', data: false },
-      {name: 'print', data: ' and I am not bold'},
-      {name: 'println', data: 'Me tooo'},
       {name: 'newLine'},
     ];
 
@@ -171,13 +146,14 @@ Me tooo
 
     assert(_.isEqual(convert(template), exptectedResult));
   });
+  */
 
-  // attributes for table
+  // multiple lines
   // general tags
   // code128
   // qr
   // image
-  // getWidth??
+  // getWidth?? testWidth - что нет переносов
   // center
   // left
   // right
