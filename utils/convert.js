@@ -3,7 +3,7 @@ const sanitizeHtml = require('sanitize-html');
 const {parseXml} = require('libxmljs');
 
 const getTag = (node) => {
-  const match = node.toString().match(/^<([^>\/]+)\/?>/);
+  const match = node.toString().match(/^<([^>\/ ]+)(\/?>| )/);
   if(match && match.length > 0) {
     return match[1];
   }
@@ -13,6 +13,22 @@ const getTag = (node) => {
 const checkIsNestedTagsPresent = (node) => {
   const result = node.toString().match(/<[^>]+>/g);
   return result ? result.length > 2 : false;
+};
+const convertType = function(value) {
+  if(value === "true") {
+    return true;
+  }
+
+  if(value === "false") {
+    return false;
+  }
+
+  const number = Number.parseFloat(value);
+  if(!isNaN(number)) {
+    return number;
+  }
+
+  return value;
 };
 
 const convert = (xml) => {
@@ -34,9 +50,13 @@ const convert = (xml) => {
     } else if(tag === 'b' && !context.isBold) {
       commands.push({name: 'bold', data: true});
       context.isBold = true;
-    } else if(['p', 'div'].includes(tag) && !isHasNestedTagsPresent) {
-      commands.push({name: 'println', data: node.text()});
-      return;
+    } else if(['p', 'div'].includes(tag)) {
+      if(!isHasNestedTagsPresent) {
+        commands.push({name: 'println', data: node.text()});
+        return;
+      } else if(commands.unshift() && !['println', 'newLine'].includes(commands.unshift().name)) {
+        commands.push({name: 'newLine'});
+      }
     } else if(tag === 'tr') {
       context.isTable = true;
     }
@@ -56,11 +76,13 @@ const convert = (xml) => {
       commands.push({name: 'bold', data: false});
       context.isBold = false;
     } else if(tag === 'tr') {
-      commands.push({name: 'table', data: context.data});
+      commands.push({name: 'tableCustom', data: context.data});
       context.data = [];
       context.isTable = false;
     } else if(tag === 'td') {
-      context.data.push(node.text());
+      const attrs = node.attrs().map(attr => ({name: attr.name(), value: attr.value()}))
+        .reduce((acc, {name, value}) => ({...acc, [name]: convertType(value)}), {});
+      context.data.push({...attrs, text: node.text()});
     } else if(tag === 'br') {
       commands.push({name: 'newLine'});
     } else if(depth > 0 && !context.isTable) {
@@ -81,9 +103,12 @@ const convert = (xml) => {
 module.exports = function(dirtyXml) {
   const cleanXml = sanitizeHtml(dirtyXml, {
     allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta' ],
+    allowedAttributes: {
+      td: ['width', 'align', 'bold'],
+    },
   });
 
   const result = convert(cleanXml);
-  console.log(result);
+  console.log(JSON.stringify(result));
   return result;
 };

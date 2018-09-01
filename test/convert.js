@@ -43,7 +43,7 @@ me</p>
 </table>
 `;
 
-    const exptectedResult = [{name: 'table', data: ['One', 'Two', 'Three']}];
+    const exptectedResult = [{name: 'tableCustom', data: [{text: 'One'}, {text: 'Two'}, {text: 'Three'}]}];
 
     assert(_.isEqual(convert(template), exptectedResult));
   });
@@ -95,32 +95,13 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  /*
-
-  it('has special treatment for table with attributes', function() {
-    const template = `<td width="0.5" align="left">Left</td><td width="0.25" align="center" bold="true">Center</td><td width="0.25" align="right">Right</td>
-`;
-
-    const exptectedResult = [
-      {name: 'tableCustom', data: [
-        { text:"Left", align:"left", width:0.5 },
-        { text:"Center", align:"center", width:0.25, bold:true },
-        { text:"Right", align:"right", width:0.25 }
-      ]},
-      {name: 'newLine'},
-    ];
-
-    assert(_.isEqual(convert(template), exptectedResult));
-  });
-
   it('can make words bold (advanced)', function() {
     const template = `
-Hello <b>OOOHHHHHOOOOO</b> and I am not bold
-Lets <b>da</b>ne<b>ce</b>!<b>!</b> and I am not bold
-Me tooo
+<p>Hello <b>OOOHHHHHOOOOO</b> and I am not bold</p>
+<p>Lets <b>da</b>ne<b>ce</b>!<b>!</b> and I am not bold</p>
+<p>Me tooo</p>
 `;
     const exptectedResult = [
-      { name: 'newLine' },
       { name: 'print', data: 'Hello ' },
       { name: 'bold', data: true },
       { name: 'print', data: 'OOOHHHHHOOOOO' },
@@ -141,12 +122,31 @@ Me tooo
       { name: 'bold', data: false },
       { name: 'print', data: ' and I am not bold' },
       { name: 'println', data: 'Me tooo' },
-      { name: 'newLine' }
-      ];
+    ];
 
     assert(_.isEqual(convert(template), exptectedResult));
   });
-  */
+
+  it.only('has special treatment for table with attributes', function() {
+    // TODO rewrite bold! it is not common for html
+    const template = `
+    <tr>
+      <td width="0.5" align="left">Left</td>
+      <td width="0.25" align="center" bold="true">Center</td>
+      <td width="0.25" align="right">Right</td>
+    </tr>
+`;
+
+    const exptectedResult = [
+      {name: 'tableCustom', data: [
+        { text:"Left", align:"left", width:0.5 },
+        { text:"Center", align:"center", width:0.25, bold:true },
+        { text:"Right", align:"right", width:0.25 }
+      ]},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
 
   // multiple lines
   // general tags
