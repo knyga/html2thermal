@@ -61,9 +61,11 @@ const convert = (xml) => {
       context.isTable = true;
     }
 
-    for(let i=0; i<innerNodes.length; i++) {
-      const innerNode = innerNodes[i];
-      process(innerNode, depth+1);
+    if(tag !== 'td') {
+      for(let i=0; i<innerNodes.length; i++) {
+        const innerNode = innerNodes[i];
+        process(innerNode, depth+1);
+      }
     }
 
     if(tag === 'fonta' && context.isFontA) {
@@ -82,6 +84,10 @@ const convert = (xml) => {
     } else if(tag === 'td') {
       const attrs = node.attrs().map(attr => ({name: attr.name(), value: attr.value()}))
         .reduce((acc, {name, value}) => ({...acc, [name]: convertType(value)}), {});
+      if(/<b>.+<\/b>/.test(node.toString()) || /font-weight *: *bold/.test(node.toString())) {
+        attrs.bold = true;
+        delete attrs.style;
+      }
       context.data.push({...attrs, text: node.text()});
     } else if(tag === 'br') {
       commands.push({name: 'newLine'});
@@ -104,11 +110,11 @@ module.exports = function(dirtyXml) {
   const cleanXml = sanitizeHtml(dirtyXml, {
     allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta' ],
     allowedAttributes: {
-      td: ['width', 'align', 'bold'],
+      td: ['width', 'align', 'bold', 'style'],
     },
   });
 
   const result = convert(cleanXml);
-  console.log(JSON.stringify(result));
+  console.log(JSON.stringify(result, null, 2));
   return result;
 };

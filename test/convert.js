@@ -127,8 +127,7 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  it.only('has special treatment for table with attributes', function() {
-    // TODO rewrite bold! it is not common for html
+  it('has special treatment for table with attributes', function() {
     const template = `
     <tr>
       <td width="0.5" align="left">Left</td>
@@ -142,6 +141,28 @@ me</p>
         { text:"Left", align:"left", width:0.5 },
         { text:"Center", align:"center", width:0.25, bold:true },
         { text:"Right", align:"right", width:0.25 }
+      ]},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
+  it('has special treatment for table cells boldness', function() {
+    const template = `
+    <tr>
+      <td width="0.25" align="left">one</td>
+      <td width="0.25" align="center"><b>two</b></td>
+      <td width="0.25">three</td>
+      <td width="0.25" style="font-weight: bold" align="right">FOUR</td>
+    </tr>
+`;
+
+    const exptectedResult = [
+      {name: 'tableCustom', data: [
+        { text:"one", align:"left", width:0.25 },
+        { text:"two", align:"center", width:0.25, bold:true },
+        { text:"three", width:0.25 },
+        { text:"FOUR", align:"right", width:0.25, bold:true }
       ]},
     ];
 
