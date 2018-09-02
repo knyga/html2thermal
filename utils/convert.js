@@ -30,6 +30,7 @@ const convertType = function(value) {
 
   return value;
 };
+const checkIsStyleBold = (node) => /font-weight *: *bold/.test(node.attr('style'));
 
 const convert = (xml) => {
   const root = parseXml(`<?xml version="1.0" encoding="UTF-8"?><root>${xml.replace(/\n/g, '')}</root>`, {noblanks: true}).root();
@@ -52,7 +53,15 @@ const convert = (xml) => {
       context.isBold = true;
     } else if(['p', 'div'].includes(tag)) {
       if(!isHasNestedTagsPresent) {
+        const isBold = checkIsStyleBold(node);
+        console.log(isBold);
+        if(isBold) {
+          commands.push({name: 'bold', data: true});
+        }
         commands.push({name: 'println', data: node.text()});
+        if(isBold) {
+          commands.push({name: 'bold', data: false});
+        }
         return;
       } else if(commands.unshift() && !['println', 'newLine'].includes(commands.unshift().name)) {
         commands.push({name: 'newLine'});
@@ -84,7 +93,7 @@ const convert = (xml) => {
     } else if(tag === 'td') {
       const attrs = node.attrs().map(attr => ({name: attr.name(), value: attr.value()}))
         .reduce((acc, {name, value}) => ({...acc, [name]: convertType(value)}), {});
-      if(/<b>.+<\/b>/.test(node.toString()) || /font-weight *: *bold/.test(node.toString())) {
+      if(/<b>.+<\/b>/.test(node.toString()) || checkIsStyleBold(node)) {
         attrs.bold = true;
         delete attrs.style;
       }
@@ -111,6 +120,8 @@ module.exports = function(dirtyXml) {
     allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta' ],
     allowedAttributes: {
       td: ['width', 'align', 'bold', 'style'],
+      p: ['style'],
+      div: ['style'],
     },
   });
 
