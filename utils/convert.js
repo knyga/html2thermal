@@ -54,7 +54,6 @@ const convert = (xml) => {
     } else if(['p', 'div'].includes(tag)) {
       if(!isHasNestedTagsPresent) {
         const isBold = checkIsStyleBold(node);
-        console.log(isBold);
         if(isBold) {
           commands.push({name: 'bold', data: true});
         }
@@ -68,6 +67,15 @@ const convert = (xml) => {
       }
     } else if(tag === 'tr') {
       context.isTable = true;
+    } else if(tag === 'opencashdrawer') {
+      commands.push({name: 'openCashDrawer'});
+      return;
+    } else if(tag === 'cut') {
+      commands.push({name: 'cut'});
+      return;
+    } else if(tag === 'partialcut') {
+      commands.push({name: 'partialCut'});
+      return;
     }
 
     if(tag !== 'td') {
@@ -117,7 +125,7 @@ const convert = (xml) => {
 
 module.exports = function(dirtyXml) {
   const cleanXml = sanitizeHtml(dirtyXml, {
-    allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta' ],
+    allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta', 'opencashdrawer', 'cut', 'partialcut' ],
     allowedAttributes: {
       td: ['width', 'align', 'bold', 'style'],
       p: ['style'],

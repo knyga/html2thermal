@@ -186,7 +186,25 @@ me</p>
 
     assert(_.isEqual(convert(template), exptectedResult));
   });
-  
+
+  it('openCashDrawer works', function() {
+    assert(_.isEqual(convert('<opencashdrawer/>'), [{name: 'openCashDrawer'}]));
+    assert(_.isEqual(convert('<opencashdrawer />'), [{name: 'openCashDrawer'}]));
+    assert(_.isEqual(convert('<p>1</p><opencashdrawer />'), [{name: 'println', data: '1'}, {name: 'openCashDrawer'}]));
+  });
+
+  it('cut works', function() {
+    assert(_.isEqual(convert('<cut/>'), [{name: 'cut'}]));
+    assert(_.isEqual(convert('<cut />'), [{name: 'cut'}]));
+    assert(_.isEqual(convert('<p>1</p><cut />'), [{name: 'println', data: '1'}, {name: 'cut'}]));
+  });
+
+  it('partialCut works', function() {
+    assert(_.isEqual(convert('<partialcut/>'), [{name: 'partialCut'}]));
+    assert(_.isEqual(convert('<partialcut />'), [{name: 'partialCut'}]));
+    assert(_.isEqual(convert('<p>1</p><partialcut />'), [{name: 'println', data: '1'}, {name: 'partialCut'}]));
+  });
+
   // general tags
   // code128
   // qr
