@@ -211,6 +211,26 @@ me</p>
     assert(_.isEqual(convert('<p>1</p><beep />'), [{name: 'println', data: '1'}, {name: 'beep'}]));
   });
 
+  it.only('rotate180 makes upside down', function() {
+    const template = `
+    <rotate180>
+      <p>dsdasdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+    </rotate180>
+`;
+
+    const exptectedResult = [
+      {name: 'upsideDown', data: true},
+      {name: 'println', data: 'dsdasdas'},
+      {name: 'bold', data: true},
+      {name: 'println', data: 'oneone'},
+      {name: 'bold', data: false},
+      {name: 'upsideDown', data: false},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
   // general tags
   // code128
   // qr
