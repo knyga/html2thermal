@@ -76,6 +76,9 @@ const convert = (xml) => {
     } else if(tag === 'partialcut') {
       commands.push({name: 'partialCut'});
       return;
+    } else if(tag === 'beep') {
+      commands.push({name: 'beep'});
+      return;
     }
 
     if(tag !== 'td') {
@@ -125,7 +128,7 @@ const convert = (xml) => {
 
 module.exports = function(dirtyXml) {
   const cleanXml = sanitizeHtml(dirtyXml, {
-    allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta', 'opencashdrawer', 'cut', 'partialcut' ],
+    allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta', 'opencashdrawer', 'cut', 'partialcut', 'beep' ],
     allowedAttributes: {
       td: ['width', 'align', 'bold', 'style'],
       p: ['style'],

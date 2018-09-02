@@ -205,6 +205,12 @@ me</p>
     assert(_.isEqual(convert('<p>1</p><partialcut />'), [{name: 'println', data: '1'}, {name: 'partialCut'}]));
   });
 
+  it('beep works', function() {
+    assert(_.isEqual(convert('<beep/>'), [{name: 'beep'}]));
+    assert(_.isEqual(convert('<beep />'), [{name: 'beep'}]));
+    assert(_.isEqual(convert('<p>1</p><beep />'), [{name: 'println', data: '1'}, {name: 'beep'}]));
+  });
+
   // general tags
   // code128
   // qr
