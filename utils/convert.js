@@ -87,6 +87,9 @@ const convert = (xml) => {
     } else if(tag === 'beep') {
       commands.push({name: 'beep'});
       return;
+    } else if(tag === 'hr') {
+      commands.push({name: 'drawLine'});
+      return;
     }
 
     if(tag !== 'td') {
@@ -145,7 +148,7 @@ const convert = (xml) => {
 module.exports = function(dirtyXml) {
   const cleanXml = sanitizeHtml(dirtyXml, {
     allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta', 'opencashdrawer', 'cut', 'partialcut', 'beep',
-      'rotate180', 'invert', 'u', 'ud' ],
+      'rotate180', 'invert', 'u', 'ud', 'hr' ],
     allowedAttributes: {
       td: ['width', 'align', 'bold', 'style'],
       p: ['style'],

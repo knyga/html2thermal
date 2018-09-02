@@ -379,6 +379,12 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
+  it('hr tag works', function() {
+    assert(_.isEqual(convert('<hr/>'), [{name: 'drawLine'}]));
+    assert(_.isEqual(convert('<hr />'), [{name: 'drawLine'}]));
+    assert(_.isEqual(convert('<p>1</p><hr />'), [{name: 'println', data: '1'}, {name: 'drawLine'}]));
+  });
+
   // general tags
   // code128
   // qr
