@@ -57,6 +57,8 @@ const convert = (xml) => {
       commands.push({name: 'invert', data: true});
     } else if(tag === 'u') {
       commands.push({name: 'underline', data: true});
+    } else if(tag === 'ud') {
+      commands.push({name: 'underlineThick', data: true});
     } else if(['p', 'div'].includes(tag)) {
       if(!isHasNestedTagsPresent) {
         const isBold = checkIsStyleBold(node);
@@ -107,6 +109,8 @@ const convert = (xml) => {
       commands.push({name: 'upsideDown', data: false});
     } else if(tag === 'u') {
       commands.push({name: 'underline', data: false});
+    } else if(tag === 'ud') {
+      commands.push({name: 'underlineThick', data: false});
     } else if(tag === 'invert') {
       commands.push({name: 'invert', data: false});
     } else if(tag === 'tr') {
@@ -140,7 +144,8 @@ const convert = (xml) => {
 
 module.exports = function(dirtyXml) {
   const cleanXml = sanitizeHtml(dirtyXml, {
-    allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta', 'opencashdrawer', 'cut', 'partialcut', 'beep', 'rotate180', 'invert', 'u' ],
+    allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta', 'opencashdrawer', 'cut', 'partialcut', 'beep',
+      'rotate180', 'invert', 'u', 'ud' ],
     allowedAttributes: {
       td: ['width', 'align', 'bold', 'style'],
       p: ['style'],

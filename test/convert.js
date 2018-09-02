@@ -337,6 +337,48 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
+  it('ud tag works', function() {
+    const template = `
+    <ud>
+      <p>dsdasdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+    </ud>
+`;
+
+    const exptectedResult = [
+      {name: 'underlineThick', data: true},
+      {name: 'println', data: 'dsdasdas'},
+      {name: 'bold', data: true},
+      {name: 'println', data: 'oneone'},
+      {name: 'bold', data: false},
+      {name: 'underlineThick', data: false},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
+  it('ud tag works inside text', function() {
+    const template = `
+      <p>dsd <ud><b>RRR</b></ud> asdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+`;
+
+    const exptectedResult = [
+      {name: 'print', data: 'dsd '},
+      {name: 'underlineThick', data: true},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'RRR'},
+      {name: 'bold', data: false},
+      {name: 'underlineThick', data: false},
+      {name: 'print', data: ' asdas'},
+      {name: 'bold', data: true},
+      {name: 'println', data: 'oneone'},
+      {name: 'bold', data: false},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
   // general tags
   // code128
   // qr
