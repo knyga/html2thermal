@@ -51,6 +51,8 @@ const convert = (xml) => {
     } else if(tag === 'b' && !context.isBold) {
       commands.push({name: 'bold', data: true});
       context.isBold = true;
+    } else if(tag === 'rotate180') {
+      commands.push({name: 'upsideDown', data: true});
     } else if(['p', 'div'].includes(tag)) {
       if(!isHasNestedTagsPresent) {
         const isBold = checkIsStyleBold(node);
@@ -97,6 +99,8 @@ const convert = (xml) => {
     } else if(tag === 'b' && context.isBold) {
       commands.push({name: 'bold', data: false});
       context.isBold = false;
+    } else if(tag === 'rotate180') {
+      commands.push({name: 'upsideDown', data: false});
     } else if(tag === 'tr') {
       commands.push({name: 'tableCustom', data: context.data});
       context.data = [];
@@ -128,7 +132,7 @@ const convert = (xml) => {
 
 module.exports = function(dirtyXml) {
   const cleanXml = sanitizeHtml(dirtyXml, {
-    allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta', 'opencashdrawer', 'cut', 'partialcut', 'beep' ],
+    allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta', 'opencashdrawer', 'cut', 'partialcut', 'beep', 'rotate180' ],
     allowedAttributes: {
       td: ['width', 'align', 'bold', 'style'],
       p: ['style'],
