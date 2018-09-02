@@ -235,7 +235,6 @@ me</p>
     const template = `
       <p>dsd <rotate180><b>RRR</b></rotate180> asdas</p>
       <div style="font-weight: bold" disabled>oneone</div>
-    </rotate180>
 `;
 
     const exptectedResult = [
@@ -278,7 +277,6 @@ me</p>
     const template = `
       <p>dsd <invert><b>RRR</b></invert> asdas</p>
       <div style="font-weight: bold" disabled>oneone</div>
-    </rotate180>
 `;
 
     const exptectedResult = [
@@ -297,7 +295,7 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  it('underline tag works', function() {
+  it('u tag works', function() {
     const template = `
     <u>
       <p>dsdasdas</p>
@@ -317,11 +315,10 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  it('underline tag works inside text', function() {
+  it('u tag works inside text', function() {
     const template = `
       <p>dsd <u><b>RRR</b></u> asdas</p>
       <div style="font-weight: bold" disabled>oneone</div>
-    </rotate180>
 `;
 
     const exptectedResult = [
