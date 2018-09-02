@@ -254,6 +254,92 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
+  it('invert tag works', function() {
+    const template = `
+    <invert>
+      <p>dsdasdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+    </invert>
+`;
+
+    const exptectedResult = [
+      {name: 'invert', data: true},
+      {name: 'println', data: 'dsdasdas'},
+      {name: 'bold', data: true},
+      {name: 'println', data: 'oneone'},
+      {name: 'bold', data: false},
+      {name: 'invert', data: false},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
+  it('invert tag works inside text', function() {
+    const template = `
+      <p>dsd <invert><b>RRR</b></invert> asdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+    </rotate180>
+`;
+
+    const exptectedResult = [
+      {name: 'print', data: 'dsd '},
+      {name: 'invert', data: true},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'RRR'},
+      {name: 'bold', data: false},
+      {name: 'invert', data: false},
+      {name: 'print', data: ' asdas'},
+      {name: 'bold', data: true},
+      {name: 'println', data: 'oneone'},
+      {name: 'bold', data: false},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
+  it('underline tag works', function() {
+    const template = `
+    <u>
+      <p>dsdasdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+    </u>
+`;
+
+    const exptectedResult = [
+      {name: 'underline', data: true},
+      {name: 'println', data: 'dsdasdas'},
+      {name: 'bold', data: true},
+      {name: 'println', data: 'oneone'},
+      {name: 'bold', data: false},
+      {name: 'underline', data: false},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
+  it('underline tag works inside text', function() {
+    const template = `
+      <p>dsd <u><b>RRR</b></u> asdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+    </rotate180>
+`;
+
+    const exptectedResult = [
+      {name: 'print', data: 'dsd '},
+      {name: 'underline', data: true},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'RRR'},
+      {name: 'bold', data: false},
+      {name: 'underline', data: false},
+      {name: 'print', data: ' asdas'},
+      {name: 'bold', data: true},
+      {name: 'println', data: 'oneone'},
+      {name: 'bold', data: false},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
   // general tags
   // code128
   // qr

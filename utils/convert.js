@@ -53,6 +53,10 @@ const convert = (xml) => {
       context.isBold = true;
     } else if(tag === 'rotate180') {
       commands.push({name: 'upsideDown', data: true});
+    } else if(tag === 'invert') {
+      commands.push({name: 'invert', data: true});
+    } else if(tag === 'u') {
+      commands.push({name: 'underline', data: true});
     } else if(['p', 'div'].includes(tag)) {
       if(!isHasNestedTagsPresent) {
         const isBold = checkIsStyleBold(node);
@@ -101,6 +105,10 @@ const convert = (xml) => {
       context.isBold = false;
     } else if(tag === 'rotate180') {
       commands.push({name: 'upsideDown', data: false});
+    } else if(tag === 'u') {
+      commands.push({name: 'underline', data: false});
+    } else if(tag === 'invert') {
+      commands.push({name: 'invert', data: false});
     } else if(tag === 'tr') {
       commands.push({name: 'tableCustom', data: context.data});
       context.data = [];
@@ -132,7 +140,7 @@ const convert = (xml) => {
 
 module.exports = function(dirtyXml) {
   const cleanXml = sanitizeHtml(dirtyXml, {
-    allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta', 'opencashdrawer', 'cut', 'partialcut', 'beep', 'rotate180' ],
+    allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta', 'opencashdrawer', 'cut', 'partialcut', 'beep', 'rotate180', 'invert', 'u' ],
     allowedAttributes: {
       td: ['width', 'align', 'bold', 'style'],
       p: ['style'],
