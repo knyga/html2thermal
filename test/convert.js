@@ -385,6 +385,138 @@ me</p>
     assert(_.isEqual(convert('<p>1</p><hr />'), [{name: 'println', data: '1'}, {name: 'drawLine'}]));
   });
 
+  describe('center tag', function() {
+    it('works', function() {
+      const template = `
+    <center>
+      <p>dsdasdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+    </center>
+`;
+
+      const exptectedResult = [
+        {name: 'alignCenter'},
+        {name: 'println', data: 'dsdasdas'},
+        {name: 'bold', data: true},
+        {name: 'println', data: 'oneone'},
+        {name: 'bold', data: false},
+        {name: 'alignLeft'},
+      ];
+
+      assert(_.isEqual(convert(template), exptectedResult));
+    });
+
+    it('works inside text', function() {
+      const template = `
+      <p>dsd <center><b>RRR</b></center> asdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+`;
+
+      const exptectedResult = [
+        {name: 'print', data: 'dsd '},
+        {name: 'alignCenter'},
+        {name: 'bold', data: true},
+        {name: 'print', data: 'RRR'},
+        {name: 'bold', data: false},
+        {name: 'alignLeft'},
+        {name: 'print', data: ' asdas'},
+        {name: 'bold', data: true},
+        {name: 'println', data: 'oneone'},
+        {name: 'bold', data: false},
+      ];
+
+      assert(_.isEqual(convert(template), exptectedResult));
+    });
+  });
+
+  describe('left tag', function() {
+    it('works', function() {
+      const template = `
+    <left>
+      <p>dsdasdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+    </left>
+`;
+
+      const exptectedResult = [
+        {name: 'alignLeft'},
+        {name: 'println', data: 'dsdasdas'},
+        {name: 'bold', data: true},
+        {name: 'println', data: 'oneone'},
+        {name: 'bold', data: false},
+        {name: 'alignLeft'},
+      ];
+
+      assert(_.isEqual(convert(template), exptectedResult));
+    });
+
+    it('works inside text', function() {
+      const template = `
+      <p>dsd <left><b>RRR</b></left> asdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+`;
+
+      const exptectedResult = [
+        {name: 'print', data: 'dsd '},
+        {name: 'alignLeft'},
+        {name: 'bold', data: true},
+        {name: 'print', data: 'RRR'},
+        {name: 'bold', data: false},
+        {name: 'alignLeft'},
+        {name: 'print', data: ' asdas'},
+        {name: 'bold', data: true},
+        {name: 'println', data: 'oneone'},
+        {name: 'bold', data: false},
+      ];
+
+      assert(_.isEqual(convert(template), exptectedResult));
+    });
+  });
+
+  describe('right tag', function() {
+    it('works', function() {
+      const template = `
+    <right>
+      <p>dsdasdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+    </right>
+`;
+
+      const exptectedResult = [
+        {name: 'alignRight'},
+        {name: 'println', data: 'dsdasdas'},
+        {name: 'bold', data: true},
+        {name: 'println', data: 'oneone'},
+        {name: 'bold', data: false},
+        {name: 'alignLeft'},
+      ];
+
+      assert(_.isEqual(convert(template), exptectedResult));
+    });
+
+    it('works inside text', function() {
+      const template = `
+      <p>dsd <right><b>RRR</b></right> asdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+`;
+
+      const exptectedResult = [
+        {name: 'print', data: 'dsd '},
+        {name: 'alignRight'},
+        {name: 'bold', data: true},
+        {name: 'print', data: 'RRR'},
+        {name: 'bold', data: false},
+        {name: 'alignLeft'},
+        {name: 'print', data: ' asdas'},
+        {name: 'bold', data: true},
+        {name: 'println', data: 'oneone'},
+        {name: 'bold', data: false},
+      ];
+
+      assert(_.isEqual(convert(template), exptectedResult));
+    });
+  });
+
   // general tags
   // code128
   // qr
