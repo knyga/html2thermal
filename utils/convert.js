@@ -1,36 +1,10 @@
 const _ = require('lodash');
 const sanitizeHtml = require('sanitize-html');
 const {parseXml} = require('libxmljs');
-
-const getTag = (node) => {
-  const match = node.toString().match(/^<([^>\/ ]+)(\/?>| )/);
-  if(match && match.length > 0) {
-    return match[1];
-  }
-
-  return null;
-};
-const checkIsNestedTagsPresent = (node) => {
-  const result = node.toString().match(/<[^>]+>/g);
-  return result ? result.length > 2 : false;
-};
-const convertType = function(value) {
-  if(value === "true") {
-    return true;
-  }
-
-  if(value === "false") {
-    return false;
-  }
-
-  const number = Number.parseFloat(value);
-  if(!isNaN(number)) {
-    return number;
-  }
-
-  return value;
-};
-const checkIsStyleBold = (node) => /font-weight *: *bold/.test(node.attr('style'));
+const convertType = require('./convertType');
+const getTag = require('./getTag');
+const checkIsNestedTagsPresent = require('./checkIsNestedTagsPresent');
+const checkIsStyleBold = require('./checkIsStyleBold');
 
 const convert = (xml) => {
   const root = parseXml(`<?xml version="1.0" encoding="UTF-8"?><root>${xml.replace(/\n/g, '')}</root>`, {noblanks: true}).root();

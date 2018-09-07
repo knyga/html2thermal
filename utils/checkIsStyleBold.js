@@ -1,0 +1,1 @@
+module.exports = (node) => /font-weight *: *bold/.test(node.attr('style'));
