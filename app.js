@@ -6,9 +6,10 @@ printer.init({
 });
 
 const template = `
-Hello <b>OOOHHHHHOOOOO</b> and I am not bold
-Lets <b>da</b>ne<b>ce</b>!<b>!</b> and I am not bold
-Me tooo
+<div>hello world</div>
+<p>it is</p>
+<p>me
+me</p>
 `;
 
 function executePrinterCommands(commands) {
