@@ -21,6 +21,21 @@ const fontaTagHandler = ({
     return context;
   }
 });
+const fontbTagHandler = ({
+  checkIsAllowed: (context, {tag}) => tag === 'fontb',
+  before: (context) => {
+    if(!context.isFontA) return null;
+    context.commands.push({name: 'setTypeFontB'});
+    context.isFontA = false;
+    return context;
+  },
+  after: (context) => {
+    if(context.isFontA) return null;
+    context.commands.push({name: 'setTypeFontA'});
+    context.isFontA = true;
+    return context;
+  }
+});
 const trTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'tr',
   before: (context) => {
@@ -97,6 +112,7 @@ const bTagHandler = ({
 const process = (context, node, depth) => {
   const tagHandles = [
     fontaTagHandler,
+    fontbTagHandler,
     trTagHandler,
     tdTagHandler,
     brTagHandler,

@@ -78,28 +78,30 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-//   it('works with nested styling', function() {
-//     const template = `
-// <p>Hello <fontb><b>OOO<fonta>HHHHH</fonta>OOOOO</b></fontb> and I am not bold</p>
-// <p>Me tooo</p>
-// `;
-//     const exptectedResult = [
-//       {name: 'print', data: 'Hello '},
-//       {name: 'setTypeFontB'},
-//       {name: 'bold', data: true },
-//       {name: 'print', data: 'OOO'},
-//       {name: 'setTypeFontA'},
-//       {name: 'print', data: 'HHHHH'},
-//       {name: 'setTypeFontB'},
-//       {name: 'print', data: 'OOOOO'},
-//       {name: 'bold', data: false },
-//       {name: 'setTypeFontA'},
-//       {name: 'print', data: ' and I am not bold'},
-//       {name: 'println', data: 'Me tooo'},
-//     ];
-//
-//     assert(_.isEqual(convert(template), exptectedResult));
-//   });
+  it('works with nested styling', function() {
+    const template = `
+<p>Hello <fontb><b>OOO<fonta>HHHHH</fonta>OOOOO</b></fontb> and I am not bold</p>
+<p>Me tooo</p>
+`;
+    const exptectedResult = [
+      {name: 'print', data: 'Hello '},
+      {name: 'setTypeFontB'},
+      {name: 'bold', data: true },
+      {name: 'print', data: 'OOO'},
+      {name: 'setTypeFontA'},
+      {name: 'print', data: 'HHHHH'},
+      {name: 'setTypeFontB'},
+      {name: 'print', data: 'OOOOO'},
+      {name: 'bold', data: false },
+      {name: 'setTypeFontA'},
+      {name: 'print', data: ' and I am not bold'},
+      {name: 'newLine'},
+      {name: 'print', data: 'Me tooo'},
+      {name: 'newLine'},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
 
 //   it('can make words bold (advanced)', function() {
 //     const template = `
