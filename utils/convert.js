@@ -109,13 +109,32 @@ const bTagHandler = ({
     return context;
   }
 });
+const boldFontStyleHandler = ({
+  isMultiCheck: true,
+  checkIsAllowed: (context, {node}) => checkIsStyleBold(node),
+  before: (context) => {
+    if(context.isBold) return null;
+    context.commands.push({name: 'bold', data: true});
+    context.isBold = true;
+    return context;
+  },
+  after: (context) => {
+    if(!context.isBold) return null;
+    context.commands.push({name: 'bold', data: false});
+    context.isBold = false;
+    return context;
+  }
+});
 
 const process = (context, node, depth) => {
-  const tagHandles = [
-    fontaTagHandler,
-    fontbTagHandler,
+  const handlersCollection = [
+    // order matters
+    // TODO add order to handler
     trTagHandler,
     tdTagHandler,
+    boldFontStyleHandler,
+    fontaTagHandler,
+    fontbTagHandler,
     brTagHandler,
     divOrPTagsHandler,
     bTagHandler,
@@ -128,39 +147,45 @@ const process = (context, node, depth) => {
     isHasNestedTagsPresent: checkIsNestedTagsPresent(node),
   };
   // before
-  for(let i=0; i<tagHandles.length; i++) {
-    const handler = tagHandles[i];
+  for(let i=0; i<handlersCollection.length; i++) {
+    const handler = handlersCollection[i];
     if(handler.before && handler.checkIsAllowed(context, nodeGroup, depth)) {
       const result = handler.before(context, nodeGroup, depth);
       if(result !== null) {
         context = result;
-        break;
+        if(!handler.isMultiCheck) {
+          break;
+        }
       }
     }
   }
   // during
-  const matchedHandler = tagHandles.reduce(
-    (res, handler) => res ? res :
-      (handler.during && handler.checkIsAllowed(context, nodeGroup, depth) ? handler : null ), null);
-  if(matchedHandler === null) {
+  const customDuringHandlers = handlersCollection
+    .filter(handler => handler.during  && handler.checkIsAllowed(context, nodeGroup, depth));
+  if(customDuringHandlers.length === 0) {
     for(let i=0; i<nodeGroup.innerNodes.length; i++) {
       const innerNode = nodeGroup.innerNodes[i];
       context = process(context, innerNode, depth+1);
     }
   } else {
-    const result = matchedHandler.during(context, nodeGroup, depth);
-    if(result !== null) {
-      context = result;
+    for(let i=0; i<customDuringHandlers.length; i++) {
+      const customHandler = customDuringHandlers[i];
+      const result = customHandler.during(context, nodeGroup, depth);
+      if(result !== null) {
+        context = result;
+      }
     }
   }
   // after
-  for(let i=0; i<tagHandles.length; i++) {
-    const handler = tagHandles[i];
+  for(let i=0; i<handlersCollection.length; i++) {
+    const handler = handlersCollection[i];
     if(handler.after && handler.checkIsAllowed(context, nodeGroup, depth)) {
       const result = handler.after(context, nodeGroup, depth);
       if(result !== null) {
         context = result;
-        break;
+        if(!handler.isMultiCheck) {
+          break;
+        }
       }
     }
   }

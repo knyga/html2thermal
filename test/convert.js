@@ -183,23 +183,25 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-//   it('has special treatment for style boldness', function() {
-//     const template = `
-//     <p style="font-weight: bold">dsdasdas</p>
-//     <div style="font-weight: bold" disabled>oneone</div>
-// `;
-//
-//     const exptectedResult = [
-//       {name: 'bold', data: true},
-//       {name: 'println', data: 'dsdasdas'},
-//       {name: 'bold', data: false},
-//       {name: 'bold', data: true},
-//       {name: 'println', data: 'oneone'},
-//       {name: 'bold', data: false},
-//     ];
-//
-//     assert(_.isEqual(convert(template), exptectedResult));
-//   });
+  it('has special treatment for style boldness', function() {
+    const template = `
+    <p style="font-weight: bold">dsdasdas</p>
+    <div style="font-weight: bold" disabled>oneone</div>
+`;
+
+    const exptectedResult = [
+      {name: 'bold', data: true},
+      {name: 'print', data: 'dsdasdas'},
+      {name: 'bold', data: false},
+      {name: 'newLine'},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'oneone'},
+      {name: 'bold', data: false},
+      {name: 'newLine'},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
 
 //   it('openCashDrawer works', function() {
 //     assert(_.isEqual(convert('<opencashdrawer/>'), [{name: 'openCashDrawer'}]));
