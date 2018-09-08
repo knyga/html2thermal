@@ -55,6 +55,7 @@ const tdTagHandler = ({
     context.isTable = true;
     return context;
   },
+  during: () => null,
   after: (context, {node}) => {
     const attrs = node.attrs().map(attr => ({name: attr.name(), value: attr.value()}))
       .reduce((acc, {name, value}) => ({...acc, [name]: convertType(value)}), {});
@@ -138,9 +139,19 @@ const process = (context, node, depth) => {
     }
   }
   // during
-  for(let i=0; i<nodeGroup.innerNodes.length; i++) {
-    const innerNode = nodeGroup.innerNodes[i];
-    context = process(context, innerNode, depth+1);
+  const matchedHandler = tagHandles.reduce(
+    (res, handler) => res ? res :
+      (handler.during && handler.checkIsAllowed(context, nodeGroup, depth) ? handler : null ), null);
+  if(matchedHandler === null) {
+    for(let i=0; i<nodeGroup.innerNodes.length; i++) {
+      const innerNode = nodeGroup.innerNodes[i];
+      context = process(context, innerNode, depth+1);
+    }
+  } else {
+    const result = matchedHandler.during(context, nodeGroup, depth);
+    if(result !== null) {
+      context = result;
+    }
   }
   // after
   for(let i=0; i<tagHandles.length; i++) {

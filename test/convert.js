@@ -103,80 +103,86 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-//   it('can make words bold (advanced)', function() {
-//     const template = `
-// <p>Hello <b>OOOHHHHHOOOOO</b> and I am not bold</p>
-// <p>Lets <b>da</b>ne<b>ce</b>!<b>!</b> and I am not bold</p>
-// <p>Me tooo</p>
-// `;
-//     const exptectedResult = [
-//       { name: 'print', data: 'Hello ' },
-//       { name: 'bold', data: true },
-//       { name: 'print', data: 'OOOHHHHHOOOOO' },
-//       { name: 'bold', data: false },
-//       { name: 'print', data: ' and I am not bold' },
-//       { name: 'newLine' },
-//       { name: 'print', data: 'Lets ' },
-//       { name: 'bold', data: true },
-//       { name: 'print', data: 'da' },
-//       { name: 'bold', data: false },
-//       { name: 'print', data: 'ne' },
-//       { name: 'bold', data: true },
-//       { name: 'print', data: 'ce' },
-//       { name: 'bold', data: false },
-//       { name: 'print', data: '!' },
-//       { name: 'bold', data: true },
-//       { name: 'print', data: '!' },
-//       { name: 'bold', data: false },
-//       { name: 'print', data: ' and I am not bold' },
-//       { name: 'println', data: 'Me tooo' },
-//     ];
-//
-//     assert(_.isEqual(convert(template), exptectedResult));
-//   });
-//
-//   it('has special treatment for table with attributes', function() {
-//     const template = `
-//     <tr>
-//       <td width="0.5" align="left">Left</td>
-//       <td width="0.25" align="center" bold="true">Center</td>
-//       <td width="0.25" align="right">Right</td>
-//     </tr>
-// `;
-//
-//     const exptectedResult = [
-//       {name: 'tableCustom', data: [
-//         { text:"Left", align:"left", width:0.5 },
-//         { text:"Center", align:"center", width:0.25, bold:true },
-//         { text:"Right", align:"right", width:0.25 }
-//       ]},
-//     ];
-//
-//     assert(_.isEqual(convert(template), exptectedResult));
-//   });
-//
-//   it('has special treatment for table cells boldness', function() {
-//     const template = `
-//     <tr>
-//       <td width="0.25" align="left">one</td>
-//       <td width="0.25" align="center"><b>two</b></td>
-//       <td width="0.25">three</td>
-//       <td width="0.25" style="font-weight: bold" align="right">FOUR</td>
-//     </tr>
-// `;
-//
-//     const exptectedResult = [
-//       {name: 'tableCustom', data: [
-//         { text:"one", align:"left", width:0.25 },
-//         { text:"two", align:"center", width:0.25, bold:true },
-//         { text:"three", width:0.25 },
-//         { text:"FOUR", align:"right", width:0.25, bold:true }
-//       ]},
-//     ];
-//
-//     assert(_.isEqual(convert(template), exptectedResult));
-//   });
-//
+  it('can make words bold (advanced)', function() {
+    const template = `
+<p>Hello <b>OOOHHHHHOOOOO</b> and I am not bold</p>
+<p>Lets <b>da</b>ne<b>ce</b>!<b>!</b> and I am not bold</p>
+<p>Me tooo</p>
+`;
+    const exptectedResult = [
+      { name: 'print', data: 'Hello ' },
+      { name: 'bold', data: true },
+      { name: 'print', data: 'OOOHHHHHOOOOO' },
+      { name: 'bold', data: false },
+      { name: 'print', data: ' and I am not bold' },
+      { name: 'newLine' },
+      { name: 'print', data: 'Lets ' },
+      { name: 'bold', data: true },
+      { name: 'print', data: 'da' },
+      { name: 'bold', data: false },
+      { name: 'print', data: 'ne' },
+      { name: 'bold', data: true },
+      { name: 'print', data: 'ce' },
+      { name: 'bold', data: false },
+      { name: 'print', data: '!' },
+      { name: 'bold', data: true },
+      { name: 'print', data: '!' },
+      { name: 'bold', data: false },
+      { name: 'print', data: ' and I am not bold' },
+      { name: 'newLine' },
+      { name: 'print', data: 'Me tooo' },
+      { name: 'newLine' },
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
+  it('has special treatment for table with attributes', function() {
+    const template = `
+    <table>
+        <tr>
+            <td width="0.5" align="left">Left</td>
+            <td width="0.25" align="center" bold="true">Center</td>
+            <td width="0.25" align="right">Right</td>
+        </tr>
+    </table>
+`;
+
+    const exptectedResult = [
+      {name: 'tableCustom', data: [
+        { text:"Left", align:"left", width:0.5 },
+        { text:"Center", align:"center", width:0.25, bold:true },
+        { text:"Right", align:"right", width:0.25 }
+      ]},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
+  it('has special treatment for table cells boldness', function() {
+    const template = `
+    <table>
+        <tr>
+          <td width="0.25" align="left">one</td>
+          <td width="0.25" align="center"><b>two</b></td>
+          <td width="0.25">three</td>
+          <td width="0.25" style="font-weight: bold" align="right">FOUR</td>
+        </tr>
+    </table>
+`;
+
+    const exptectedResult = [
+      {name: 'tableCustom', data: [
+        { text:"one", align:"left", width:0.25 },
+        { text:"two", align:"center", width:0.25, bold:true },
+        { text:"three", width:0.25 },
+        { text:"FOUR", align:"right", width:0.25, bold:true }
+      ]},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
 //   it('has special treatment for style boldness', function() {
 //     const template = `
 //     <p style="font-weight: bold">dsdasdas</p>
@@ -194,7 +200,7 @@ me</p>
 //
 //     assert(_.isEqual(convert(template), exptectedResult));
 //   });
-//
+
 //   it('openCashDrawer works', function() {
 //     assert(_.isEqual(convert('<opencashdrawer/>'), [{name: 'openCashDrawer'}]));
 //     assert(_.isEqual(convert('<opencashdrawer />'), [{name: 'openCashDrawer'}]));
