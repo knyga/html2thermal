@@ -580,6 +580,36 @@ me</p>
     });
   });
 
+  it('doubleheight tag', function () {
+    const template = `
+    <doubleheight>
+      <p style="font-weight: bold">dsdasdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+    </doubleheight>
+    <p>123</p>
+    <p>456</p>
+`;
+
+    const exptectedResult = [
+      {name: 'setTextDoubleHeight'},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'dsdasdas'},
+      {name: 'bold', data: false},
+      {name: 'newLine'},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'oneone'},
+      {name: 'bold', data: false},
+      {name: 'newLine'},
+      {name: 'setTextNormal'},
+      {name: "print", data: "123"},
+      {name: "newLine"},
+      {name: "print", data: "456"},
+      {name: "newLine"},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
   // general tags
   // code128
   // qr

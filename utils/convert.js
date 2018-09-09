@@ -237,6 +237,17 @@ const rightTagHandler = ({
     return context;
   }
 });
+const doubleHeightTagHandler = ({
+  checkIsAllowed: (context, {tag}) => tag === 'doubleheight',
+  before: (context) => {
+    context.commands.push({name: 'setTextDoubleHeight'});
+    return context;
+  },
+  after: (context) => {
+    context.commands.push({name: 'setTextNormal'});
+    return context;
+  }
+});
 
 const process = (context, node, depth) => {
   const handlersCollection = [
@@ -263,6 +274,7 @@ const process = (context, node, depth) => {
     centerTagHandler,
     leftTagHandler,
     rightTagHandler,
+    doubleHeightTagHandler,
 
     divOrPTagsHandler,
 
@@ -337,7 +349,7 @@ const convert = (xml) => {
 module.exports = function(dirtyXml) {
   const cleanXml = sanitizeHtml(dirtyXml, {
     allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta', 'opencashdrawer', 'cut', 'partialcut', 'beep',
-      'rotate180', 'invert', 'u', 'ud', 'hr', 'center', 'left', 'right' ],
+      'rotate180', 'invert', 'u', 'ud', 'hr', 'center', 'left', 'right', 'doubleheight' ],
     allowedAttributes: {
       td: ['width', 'align', 'bold', 'style'],
       p: ['style'],
