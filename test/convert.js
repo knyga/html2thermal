@@ -215,18 +215,18 @@ me</p>
     assert(_.isEqual(convert('<p>1</p><cut />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'cut'}]));
   });
 
-//   it('partialCut works', function() {
-//     assert(_.isEqual(convert('<partialcut/>'), [{name: 'partialCut'}]));
-//     assert(_.isEqual(convert('<partialcut />'), [{name: 'partialCut'}]));
-//     assert(_.isEqual(convert('<p>1</p><partialcut />'), [{name: 'println', data: '1'}, {name: 'partialCut'}]));
-//   });
-//
-//   it('beep works', function() {
-//     assert(_.isEqual(convert('<beep/>'), [{name: 'beep'}]));
-//     assert(_.isEqual(convert('<beep />'), [{name: 'beep'}]));
-//     assert(_.isEqual(convert('<p>1</p><beep />'), [{name: 'println', data: '1'}, {name: 'beep'}]));
-//   });
-//
+  it('partialCut works', function() {
+    assert(_.isEqual(convert('<partialcut/>'), [{name: 'partialCut'}]));
+    assert(_.isEqual(convert('<partialcut />'), [{name: 'partialCut'}]));
+    assert(_.isEqual(convert('<p>1</p><partialcut />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'partialCut'}]));
+  });
+
+  it('beep works', function() {
+    assert(_.isEqual(convert('<beep/>'), [{name: 'beep'}]));
+    assert(_.isEqual(convert('<beep />'), [{name: 'beep'}]));
+    assert(_.isEqual(convert('<p>1</p><beep />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'beep'}]));
+  });
+
 //   it('rotate180 makes upside down', function() {
 //     const template = `
 //     <rotate180>

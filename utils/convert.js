@@ -125,7 +125,7 @@ const boldFontStyleHandler = ({
     return context;
   }
 });
-const opencashdrawerTagHandler = ({
+const openCashDrawerTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'opencashdrawer',
   after: (context) => {
     context.commands.push({name: 'openCashDrawer'});
@@ -136,6 +136,20 @@ const cutTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'cut',
   after: (context) => {
     context.commands.push({name: 'cut'});
+    return context;
+  },
+});
+const beepTagHandler = ({
+  checkIsAllowed: (context, {tag}) => tag === 'beep',
+  after: (context) => {
+    context.commands.push({name: 'beep'});
+    return context;
+  },
+});
+const partialCutTagHandler = ({
+  checkIsAllowed: (context, {tag}) => tag === 'partialcut',
+  after: (context) => {
+    context.commands.push({name: 'partialCut'});
     return context;
   },
 });
@@ -151,8 +165,10 @@ const process = (context, node, depth) => {
     brTagHandler,
     divOrPTagsHandler,
     bTagHandler,
-    opencashdrawerTagHandler,
+    openCashDrawerTagHandler,
     cutTagHandler,
+    beepTagHandler,
+    partialCutTagHandler,
     notagHandler,
   ];
   const nodeGroup = {
