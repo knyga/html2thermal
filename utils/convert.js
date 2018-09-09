@@ -389,7 +389,7 @@ module.exports = function(dirtyXml) {
   const cleanXml = sanitizeHtml(dirtyXml, {
     allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta', 'opencashdrawer', 'cut', 'partialcut', 'beep',
       'rotate180', 'invert', 'u', 'ud', 'hr', 'center', 'left', 'right', 'doubleheight', 'doublewidth', 'quadarea',
-    'normal'],
+      'normal'],
     allowedAttributes: {
       td: ['width', 'align', 'bold', 'style'],
       p: ['style'],

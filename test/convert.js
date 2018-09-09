@@ -699,6 +699,31 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
+  it.only('normal/doubleheight/doublewidth/quadcore tags', function () {
+    const template = `
+    <p><doubleheight>12<doublewidth>34<normal>7</normal></doublewidth></doubleheight></p>
+    <quadcore>777</quadcore>
+`;
+
+    const exptectedResult = [
+      {name: 'setTextNormal'},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'dsdasdas'},
+      {name: 'bold', data: false},
+      {name: 'newLine'},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'oneone'},
+      {name: 'bold', data: false},
+      {name: 'newLine'},
+      {name: "print", data: "123"},
+      {name: "newLine"},
+      {name: "print", data: "456"},
+      {name: "newLine"},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
   // general tags
   // code128
   // qr
