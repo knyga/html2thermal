@@ -610,6 +610,95 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
+  it('doublewidth tag', function () {
+    const template = `
+    <doublewidth>
+      <p style="font-weight: bold">dsdasdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+    </doublewidth>
+    <p>123</p>
+    <p>456</p>
+`;
+
+    const exptectedResult = [
+      {name: 'setTextDoubleWidth'},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'dsdasdas'},
+      {name: 'bold', data: false},
+      {name: 'newLine'},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'oneone'},
+      {name: 'bold', data: false},
+      {name: 'newLine'},
+      {name: 'setTextNormal'},
+      {name: "print", data: "123"},
+      {name: "newLine"},
+      {name: "print", data: "456"},
+      {name: "newLine"},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
+  it('quadarea tag', function () {
+    const template = `
+    <quadarea>
+      <p style="font-weight: bold">dsdasdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+    </quadarea>
+    <p>123</p>
+    <p>456</p>
+`;
+
+    const exptectedResult = [
+      {name: 'setTextQuadArea'},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'dsdasdas'},
+      {name: 'bold', data: false},
+      {name: 'newLine'},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'oneone'},
+      {name: 'bold', data: false},
+      {name: 'newLine'},
+      {name: 'setTextNormal'},
+      {name: "print", data: "123"},
+      {name: "newLine"},
+      {name: "print", data: "456"},
+      {name: "newLine"},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
+  it('normal tag', function () {
+    const template = `
+    <normal>
+      <p style="font-weight: bold">dsdasdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+    </normal>
+    <p>123</p>
+    <p>456</p>
+`;
+
+    const exptectedResult = [
+      {name: 'setTextNormal'},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'dsdasdas'},
+      {name: 'bold', data: false},
+      {name: 'newLine'},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'oneone'},
+      {name: 'bold', data: false},
+      {name: 'newLine'},
+      {name: "print", data: "123"},
+      {name: "newLine"},
+      {name: "print", data: "456"},
+      {name: "newLine"},
+    ];
+
+    assert(_.isEqual(convert(template), exptectedResult));
+  });
+
   // general tags
   // code128
   // qr
