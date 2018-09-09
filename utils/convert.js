@@ -9,30 +9,22 @@ const checkIsStyleBold = require('./checkIsStyleBold');
 const fontaTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'fonta',
   before: (context) => {
-    if(context.isFontA) return null;
     context.commands.push({name: 'setTypeFontA'});
-    context.isFontA = true;
     return context;
   },
   after: (context) => {
-    if(!context.isFontA) return null;
     context.commands.push({name: 'setTypeFontB'});
-    context.isFontA = false;
     return context;
   }
 });
 const fontbTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'fontb',
   before: (context) => {
-    if(!context.isFontA) return null;
     context.commands.push({name: 'setTypeFontB'});
-    context.isFontA = false;
     return context;
   },
   after: (context) => {
-    if(context.isFontA) return null;
     context.commands.push({name: 'setTypeFontA'});
-    context.isFontA = true;
     return context;
   }
 });
@@ -45,22 +37,17 @@ const trTagHandler = ({
   after: (context) => {
     context.commands.push({name: 'tableCustom', data: context.data});
     context.data = [];
-    context.isTable = false;
     return context;
   }
 });
 const tdTagHandler = ({
+  isIgnoreOtherHandlers: true,
   checkIsAllowed: (context, {tag}) => tag === 'td',
   checkIsBold: (node) => {
     if(/<b>.+<\/b>/.test(node.toString()) || checkIsStyleBold(node)) {
       return true;
     }
     return false;
-  },
-  before: (context, {node}) => {
-    if(tdTagHandler.checkIsBold(node)) context.isBold = true;
-    context.isTable = true;
-    return context;
   },
   during: (context) => context,
   after: (context, {node}) => {
@@ -69,7 +56,6 @@ const tdTagHandler = ({
     if(tdTagHandler.checkIsBold(node)) {
       attrs.bold = true;
       delete attrs.style;
-      context.isBold = false;
     }
     context.data.push({...attrs, text: node.text()});
     return context;
@@ -82,20 +68,14 @@ const divOrPTagsHandler = ({
     return context;
   },
 });
-const brTagHandler = ({
-  checkIsAllowed: (context, {tag}) => tag === 'br',
-  after: (context) => {
-    context.commands.push({name: 'newLine'});
-    return context;
-  },
-});
 const notagHandler = ({
+  isWithoutClosingTag: true,
   checkIsAllowed: () => true,
   after: (context, {node, isHasNestedTagsPresent}, depth) => {
-    if(depth > 0 && !context.isTable) {
+    if(depth > 0) {
       context.commands.push({name: 'print', data: node.text()});
       return context;
-    } else if(!isHasNestedTagsPresent && !context.isTable) {
+    } else if(!isHasNestedTagsPresent) {
       context.commands.push({name: 'println', data: node.text()});
       return context;
     }
@@ -103,37 +83,39 @@ const notagHandler = ({
   }
 });
 const bTagHandler = ({
+  stackName: 'bold',
   checkIsAllowed: (context, {tag}) => tag === 'b',
   before: (context) => {
-    if(context.isBold) return null;
     context.commands.push({name: 'bold', data: true});
-    context.isBold = true;
     return context;
   },
   after: (context) => {
-    if(!context.isBold) return null;
     context.commands.push({name: 'bold', data: false});
-    context.isBold = false;
     return context;
   }
 });
 const boldFontStyleHandler = ({
-  isMultiCheck: true,
+  stackName: 'bold',
   checkIsAllowed: (context, {node}) => checkIsStyleBold(node),
   before: (context) => {
-    if(context.isBold) return null;
     context.commands.push({name: 'bold', data: true});
-    context.isBold = true;
     return context;
   },
   after: (context) => {
-    if(!context.isBold) return null;
     context.commands.push({name: 'bold', data: false});
-    context.isBold = false;
     return context;
   }
 });
+const brTagHandler = ({
+  isWithoutClosingTag: true,
+  checkIsAllowed: (context, {tag}) => tag === 'br',
+  after: (context) => {
+    context.commands.push({name: 'newLine'});
+    return context;
+  },
+});
 const openCashDrawerTagHandler = ({
+  isWithoutClosingTag: true,
   checkIsAllowed: (context, {tag}) => tag === 'opencashdrawer',
   after: (context) => {
     context.commands.push({name: 'openCashDrawer'});
@@ -141,6 +123,7 @@ const openCashDrawerTagHandler = ({
   },
 });
 const cutTagHandler = ({
+  isWithoutClosingTag: true,
   checkIsAllowed: (context, {tag}) => tag === 'cut',
   after: (context) => {
     context.commands.push({name: 'cut'});
@@ -148,6 +131,7 @@ const cutTagHandler = ({
   },
 });
 const beepTagHandler = ({
+  isWithoutClosingTag: true,
   checkIsAllowed: (context, {tag}) => tag === 'beep',
   after: (context) => {
     context.commands.push({name: 'beep'});
@@ -155,6 +139,7 @@ const beepTagHandler = ({
   },
 });
 const partialCutTagHandler = ({
+  isWithoutClosingTag: true,
   checkIsAllowed: (context, {tag}) => tag === 'partialcut',
   after: (context) => {
     context.commands.push({name: 'partialCut'});
@@ -164,32 +149,22 @@ const partialCutTagHandler = ({
 const rotate180TagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'rotate180',
   before: (context) => {
-    // TODO open-close tags could be abstract
-    if(context.isRotate180) return null;
     context.commands.push({name: 'upsideDown', data: true});
-    context.isRotate180 = true;
     return context;
   },
   after: (context) => {
-    if(!context.isRotate180) return null;
     context.commands.push({name: 'upsideDown', data: false});
-    context.isRotate180 = false;
     return context;
   }
 });
 const invertTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'invert',
   before: (context) => {
-    // TODO open-close tags could be abstract
-    if(context.isInvert) return null;
     context.commands.push({name: 'invert', data: true});
-    context.isInvert = true;
     return context;
   },
   after: (context) => {
-    if(!context.isInvert) return null;
     context.commands.push({name: 'invert', data: false});
-    context.isInvert = false;
     return context;
   }
 });
@@ -225,17 +200,25 @@ const process = (context, node, depth) => {
     isHasNestedTagsPresent: checkIsNestedTagsPresent(node),
   };
   // find current handler
-  const handlers = handlersCollection.filter(handler => handler.checkIsAllowed(context, nodeGroup, depth));
+  let handlers = handlersCollection.filter(handler => handler.checkIsAllowed(context, nodeGroup, depth));
+  for(let i=0; i<handlers.length; i++) {
+    if(handlers[i].isIgnoreOtherHandlers) {
+      handlers = [handlers[i]];
+      break;
+    }
+  }
   // remove notagHandler if found anything
   if(handlers.length > 1) {
     handlers.pop();
   }
   for(let i=0; i<handlers.length; i++) {
-    const {before} = handlers[i];
-    if(before) {
+    const {before, stackName: handlerStackName, isWithoutClosingTag} = handlers[i];
+    const stackName = handlerStackName ? handlerStackName : nodeGroup.tag;
+    if(before && (!context.stack[stackName] || isWithoutClosingTag)) {
       const result = before(context, nodeGroup, depth);
       context = result === null ? context : result;
     }
+    context.stack[stackName] = context.stack[stackName] ? context.stack[stackName] + 1 : 1;
   }
   const withDuringHandlers = handlers.filter(handler => handler.during);
   if(withDuringHandlers.length > 0) {
@@ -253,11 +236,13 @@ const process = (context, node, depth) => {
     }
   }
   for(let i=0; i<handlers.length; i++) {
-    const {after} = handlers[i];
-    if(after) {
+    const {after, stackName: handlerStackName, isWithoutClosingTag} = handlers[i];
+    const stackName = handlerStackName ? handlerStackName : nodeGroup.tag;
+    if(after && (context.stack[stackName] || isWithoutClosingTag)) {
       const result = after(context, nodeGroup, depth);
       context = result === null ? context : result;
     }
+    context.stack[stackName] = context.stack[stackName] - 1;
   }
   return context;
 };
@@ -265,7 +250,7 @@ const process = (context, node, depth) => {
 const convert = (xml) => {
   const root = parseXml(`<?xml version="1.0" encoding="UTF-8"?><root>${xml.replace(/\n/g, '')}</root>`, {noblanks: true}).root();
   const nodes = root.childNodes();
-  let context = {data: [], isFontA: true, isBold: false, isTable: false, align: ['left'], commands: []};
+  let context = {data: [], commands: [], stack: {}};
   for(let i=0; i<nodes.length; i++) {
     const node = nodes[i];
     process(context, node, 0);
