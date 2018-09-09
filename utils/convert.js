@@ -125,11 +125,17 @@ const boldFontStyleHandler = ({
     return context;
   }
 });
+const opencashdrawerTagHandler = ({
+  checkIsAllowed: (context, {tag}) => tag === 'opencashdrawer',
+  after: (context) => {
+    context.commands.push({name: 'openCashDrawer'});
+    return context;
+  },
+});
 
 const process = (context, node, depth) => {
   const handlersCollection = [
     // order matters
-    // TODO add order to handler
     trTagHandler,
     tdTagHandler,
     boldFontStyleHandler,
@@ -138,6 +144,7 @@ const process = (context, node, depth) => {
     brTagHandler,
     divOrPTagsHandler,
     bTagHandler,
+    opencashdrawerTagHandler,
     notagHandler,
   ];
   const nodeGroup = {

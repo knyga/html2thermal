@@ -203,12 +203,12 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-//   it('openCashDrawer works', function() {
-//     assert(_.isEqual(convert('<opencashdrawer/>'), [{name: 'openCashDrawer'}]));
-//     assert(_.isEqual(convert('<opencashdrawer />'), [{name: 'openCashDrawer'}]));
-//     assert(_.isEqual(convert('<p>1</p><opencashdrawer />'), [{name: 'println', data: '1'}, {name: 'openCashDrawer'}]));
-//   });
-//
+  it('openCashDrawer works', function() {
+    assert(_.isEqual(convert('<opencashdrawer/>'), [{name: 'openCashDrawer'}]));
+    assert(_.isEqual(convert('<opencashdrawer />'), [{name: 'openCashDrawer'}]));
+    assert(_.isEqual(convert('<p>1</p><opencashdrawer />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'openCashDrawer'}]));
+  });
+
 //   it('cut works', function() {
 //     assert(_.isEqual(convert('<cut/>'), [{name: 'cut'}]));
 //     assert(_.isEqual(convert('<cut />'), [{name: 'cut'}]));
