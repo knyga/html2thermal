@@ -153,6 +153,22 @@ const partialCutTagHandler = ({
     return context;
   },
 });
+const rotate180TagHandler = ({
+  checkIsAllowed: (context, {tag}) => tag === 'rotate180',
+  before: (context) => {
+    // TODO open-close tags could be abstract
+    if(context.isRotate180) return null;
+    context.commands.push({name: 'upsideDown', data: true});
+    context.isRotate180 = true;
+    return context;
+  },
+  after: (context) => {
+    if(!context.isRotate180) return null;
+    context.commands.push({name: 'upsideDown', data: false});
+    context.isRotate180 = false;
+    return context;
+  }
+});
 
 const process = (context, node, depth) => {
   const handlersCollection = [
@@ -165,6 +181,7 @@ const process = (context, node, depth) => {
     brTagHandler,
     divOrPTagsHandler,
     bTagHandler,
+    rotate180TagHandler,
     openCashDrawerTagHandler,
     cutTagHandler,
     beepTagHandler,
