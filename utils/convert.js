@@ -169,23 +169,45 @@ const rotate180TagHandler = ({
     return context;
   }
 });
+const invertTagHandler = ({
+  checkIsAllowed: (context, {tag}) => tag === 'invert',
+  before: (context) => {
+    // TODO open-close tags could be abstract
+    if(context.isInvert) return null;
+    context.commands.push({name: 'invert', data: true});
+    context.isInvert = true;
+    return context;
+  },
+  after: (context) => {
+    if(!context.isInvert) return null;
+    context.commands.push({name: 'invert', data: false});
+    context.isInvert = false;
+    return context;
+  }
+});
 
 const process = (context, node, depth) => {
   const handlersCollection = [
     // order matters
     trTagHandler,
     tdTagHandler,
+
     boldFontStyleHandler,
-    fontaTagHandler,
-    fontbTagHandler,
+
     brTagHandler,
-    divOrPTagsHandler,
-    bTagHandler,
-    rotate180TagHandler,
     openCashDrawerTagHandler,
     cutTagHandler,
     beepTagHandler,
     partialCutTagHandler,
+
+    fontaTagHandler,
+    fontbTagHandler,
+    bTagHandler,
+    rotate180TagHandler,
+    invertTagHandler,
+
+    divOrPTagsHandler,
+
     notagHandler,
   ];
   const nodeGroup = {

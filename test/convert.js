@@ -2,8 +2,8 @@ const assert = require('assert');
 const _ = require('lodash');
 const convert = require('../utils/convert');
 
-describe('convertTemplateToPrinterCommands', function() {
-  it('create print line commands', function() {
+describe('convertTemplateToPrinterCommands', function () {
+  it('create print line commands', function () {
     const template = `
 hello world
 it is
@@ -18,7 +18,7 @@ me
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  it('understands multiple lines', function() {
+  it('understands multiple lines', function () {
     const template = `
 <div>hello world</div>
 <p>it is</p>
@@ -39,7 +39,7 @@ me</p>
   });
 
 
-  it('has special treatment for simple table', function() {
+  it('has special treatment for simple table', function () {
     const template = `
 <table>
 <tr><td>One</td><td>Two</td><td>Three</td></tr>
@@ -51,7 +51,7 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  it('understands blank lines', function() {
+  it('understands blank lines', function () {
     assert(_.isEqual(convert(`<br/>`), [{name: 'newLine'}]));
     assert(_.isEqual(convert(`<br/><br>`), [{name: 'newLine'}, {name: 'newLine'}]));
     assert(_.isEqual(convert(`<p>ho-ho</p><br/><br><p>ha-ha</p>`),
@@ -59,16 +59,16 @@ me</p>
         {name: 'print', data: 'ha-ha'}, {name: 'newLine'}]));
   });
 
-  it('can make words bold (simple)', function() {
+  it('can make words bold (simple)', function () {
     const template = `
 <p>Hello <b>OOOHHHHHOOOOO</b> and I am not bold</p>
 <p>Me tooo</p>
 `;
     const exptectedResult = [
       {name: 'print', data: 'Hello '},
-      {name: 'bold', data: true },
+      {name: 'bold', data: true},
       {name: 'print', data: 'OOOHHHHHOOOOO'},
-      {name: 'bold', data: false },
+      {name: 'bold', data: false},
       {name: 'print', data: ' and I am not bold'},
       {name: 'newLine'},
       {name: 'print', data: 'Me tooo'},
@@ -78,7 +78,7 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  it('works with nested styling', function() {
+  it('works with nested styling', function () {
     const template = `
 <p>Hello <fontb><b>OOO<fonta>HHHHH</fonta>OOOOO</b></fontb> and I am not bold</p>
 <p>Me tooo</p>
@@ -86,13 +86,13 @@ me</p>
     const exptectedResult = [
       {name: 'print', data: 'Hello '},
       {name: 'setTypeFontB'},
-      {name: 'bold', data: true },
+      {name: 'bold', data: true},
       {name: 'print', data: 'OOO'},
       {name: 'setTypeFontA'},
       {name: 'print', data: 'HHHHH'},
       {name: 'setTypeFontB'},
       {name: 'print', data: 'OOOOO'},
-      {name: 'bold', data: false },
+      {name: 'bold', data: false},
       {name: 'setTypeFontA'},
       {name: 'print', data: ' and I am not bold'},
       {name: 'newLine'},
@@ -103,41 +103,41 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  it('can make words bold (advanced)', function() {
+  it('can make words bold (advanced)', function () {
     const template = `
 <p>Hello <b>OOOHHHHHOOOOO</b> and I am not bold</p>
 <p>Lets <b>da</b>ne<b>ce</b>!<b>!</b> and I am not bold</p>
 <p>Me tooo</p>
 `;
     const exptectedResult = [
-      { name: 'print', data: 'Hello ' },
-      { name: 'bold', data: true },
-      { name: 'print', data: 'OOOHHHHHOOOOO' },
-      { name: 'bold', data: false },
-      { name: 'print', data: ' and I am not bold' },
-      { name: 'newLine' },
-      { name: 'print', data: 'Lets ' },
-      { name: 'bold', data: true },
-      { name: 'print', data: 'da' },
-      { name: 'bold', data: false },
-      { name: 'print', data: 'ne' },
-      { name: 'bold', data: true },
-      { name: 'print', data: 'ce' },
-      { name: 'bold', data: false },
-      { name: 'print', data: '!' },
-      { name: 'bold', data: true },
-      { name: 'print', data: '!' },
-      { name: 'bold', data: false },
-      { name: 'print', data: ' and I am not bold' },
-      { name: 'newLine' },
-      { name: 'print', data: 'Me tooo' },
-      { name: 'newLine' },
+      {name: 'print', data: 'Hello '},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'OOOHHHHHOOOOO'},
+      {name: 'bold', data: false},
+      {name: 'print', data: ' and I am not bold'},
+      {name: 'newLine'},
+      {name: 'print', data: 'Lets '},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'da'},
+      {name: 'bold', data: false},
+      {name: 'print', data: 'ne'},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'ce'},
+      {name: 'bold', data: false},
+      {name: 'print', data: '!'},
+      {name: 'bold', data: true},
+      {name: 'print', data: '!'},
+      {name: 'bold', data: false},
+      {name: 'print', data: ' and I am not bold'},
+      {name: 'newLine'},
+      {name: 'print', data: 'Me tooo'},
+      {name: 'newLine'},
     ];
 
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  it('has special treatment for table with attributes', function() {
+  it('has special treatment for table with attributes', function () {
     const template = `
     <table>
         <tr>
@@ -149,17 +149,19 @@ me</p>
 `;
 
     const exptectedResult = [
-      {name: 'tableCustom', data: [
-        { text:"Left", align:"left", width:0.5 },
-        { text:"Center", align:"center", width:0.25, bold:true },
-        { text:"Right", align:"right", width:0.25 }
-      ]},
+      {
+        name: 'tableCustom', data: [
+        {text: "Left", align: "left", width: 0.5},
+        {text: "Center", align: "center", width: 0.25, bold: true},
+        {text: "Right", align: "right", width: 0.25}
+      ]
+      },
     ];
 
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  it('has special treatment for table cells boldness', function() {
+  it('has special treatment for table cells boldness', function () {
     const template = `
     <table>
         <tr>
@@ -172,18 +174,20 @@ me</p>
 `;
 
     const exptectedResult = [
-      {name: 'tableCustom', data: [
-        { text:"one", align:"left", width:0.25 },
-        { text:"two", align:"center", width:0.25, bold:true },
-        { text:"three", width:0.25 },
-        { text:"FOUR", align:"right", width:0.25, bold:true }
-      ]},
+      {
+        name: 'tableCustom', data: [
+        {text: "one", align: "left", width: 0.25},
+        {text: "two", align: "center", width: 0.25, bold: true},
+        {text: "three", width: 0.25},
+        {text: "FOUR", align: "right", width: 0.25, bold: true}
+      ]
+      },
     ];
 
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  it('has special treatment for style boldness', function() {
+  it('has special treatment for style boldness', function () {
     const template = `
     <p style="font-weight: bold">dsdasdas</p>
     <div style="font-weight: bold" disabled>oneone</div>
@@ -203,32 +207,38 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  it('openCashDrawer works', function() {
+  it('openCashDrawer works', function () {
     assert(_.isEqual(convert('<opencashdrawer/>'), [{name: 'openCashDrawer'}]));
     assert(_.isEqual(convert('<opencashdrawer />'), [{name: 'openCashDrawer'}]));
-    assert(_.isEqual(convert('<p>1</p><opencashdrawer />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'openCashDrawer'}]));
+    assert(_.isEqual(convert('<p>1</p><opencashdrawer />'), [{
+      name: 'print',
+      data: '1'
+    }, {name: 'newLine'}, {name: 'openCashDrawer'}]));
   });
 
-  it('cut works', function() {
+  it('cut works', function () {
     assert(_.isEqual(convert('<cut/>'), [{name: 'cut'}]));
     assert(_.isEqual(convert('<cut />'), [{name: 'cut'}]));
     assert(_.isEqual(convert('<p>1</p><cut />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'cut'}]));
   });
 
-  it('partialCut works', function() {
+  it('partialCut works', function () {
     assert(_.isEqual(convert('<partialcut/>'), [{name: 'partialCut'}]));
     assert(_.isEqual(convert('<partialcut />'), [{name: 'partialCut'}]));
-    assert(_.isEqual(convert('<p>1</p><partialcut />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'partialCut'}]));
+    assert(_.isEqual(convert('<p>1</p><partialcut />'), [{
+      name: 'print',
+      data: '1'
+    }, {name: 'newLine'}, {name: 'partialCut'}]));
   });
 
-  it('beep works', function() {
+  it('beep works', function () {
     assert(_.isEqual(convert('<beep/>'), [{name: 'beep'}]));
     assert(_.isEqual(convert('<beep />'), [{name: 'beep'}]));
     assert(_.isEqual(convert('<p>1</p><beep />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'beep'}]));
   });
 
-  describe('rotate180', function() {
-    it('rotate180 makes upside down', function() {
+  describe('rotate180', function () {
+    it('rotate180 makes upside down', function () {
       const template = `
     <rotate180>
       <p>dsdasdas</p>
@@ -250,7 +260,7 @@ me</p>
       assert(_.isEqual(convert(template), exptectedResult));
     });
 
-    it('rotate180 makes upside down inside text', function() {
+    it('rotate180 makes upside down inside text', function () {
       const template = `
       <p>dsd <rotate180><b>RRR</b></rotate180> asdas</p>
       <div style="font-weight: bold" disabled>oneone</div>
@@ -274,48 +284,56 @@ me</p>
       assert(_.isEqual(convert(template), exptectedResult));
     });
   });
-//   it('invert tag works', function() {
-//     const template = `
-//     <invert>
-//       <p>dsdasdas</p>
-//       <div style="font-weight: bold" disabled>oneone</div>
-//     </invert>
-// `;
-//
-//     const exptectedResult = [
-//       {name: 'invert', data: true},
-//       {name: 'println', data: 'dsdasdas'},
-//       {name: 'bold', data: true},
-//       {name: 'println', data: 'oneone'},
-//       {name: 'bold', data: false},
-//       {name: 'invert', data: false},
-//     ];
-//
-//     assert(_.isEqual(convert(template), exptectedResult));
-//   });
-//
-//   it('invert tag works inside text', function() {
-//     const template = `
-//       <p>dsd <invert><b>RRR</b></invert> asdas</p>
-//       <div style="font-weight: bold" disabled>oneone</div>
-// `;
-//
-//     const exptectedResult = [
-//       {name: 'print', data: 'dsd '},
-//       {name: 'invert', data: true},
-//       {name: 'bold', data: true},
-//       {name: 'print', data: 'RRR'},
-//       {name: 'bold', data: false},
-//       {name: 'invert', data: false},
-//       {name: 'print', data: ' asdas'},
-//       {name: 'bold', data: true},
-//       {name: 'println', data: 'oneone'},
-//       {name: 'bold', data: false},
-//     ];
-//
-//     assert(_.isEqual(convert(template), exptectedResult));
-//   });
-//
+
+  describe('invert', function () {
+    it('invert tag works', function () {
+      const template = `
+    <invert>
+      <p>dsdasdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+    </invert>
+`;
+
+      const exptectedResult = [
+        {name: 'invert', data: true},
+        {name: 'print', data: 'dsdasdas'},
+        {name: 'newLine'},
+        {name: 'bold', data: true},
+        {name: 'print', data: 'oneone'},
+        {name: 'bold', data: false},
+        {name: 'newLine'},
+        {name: 'invert', data: false},
+      ];
+
+      assert(_.isEqual(convert(template), exptectedResult));
+    });
+
+    it('invert tag works inside text', function () {
+      const template = `
+      <p>dsd <invert><b>RRR</b></invert> asdas</p>
+      <div style="font-weight: bold" disabled>oneone</div>
+`;
+
+      const exptectedResult = [
+        {name: 'print', data: 'dsd '},
+        {name: 'invert', data: true},
+        {name: 'bold', data: true},
+        {name: 'print', data: 'RRR'},
+        {name: 'bold', data: false},
+        {name: 'invert', data: false},
+        {name: 'print', data: ' asdas'},
+        {name: 'newLine'},
+        {name: 'bold', data: true},
+        {name: 'print', data: 'oneone'},
+        {name: 'bold', data: false},
+        {name: 'newLine'},
+      ];
+
+      assert(_.isEqual(convert(template), exptectedResult));
+    });
+  });
+
+
 //   it('u tag works', function() {
 //     const template = `
 //     <u>
