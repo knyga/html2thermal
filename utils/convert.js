@@ -146,6 +146,14 @@ const partialCutTagHandler = ({
     return context;
   },
 });
+const hrTagHandler = ({
+  isWithoutClosingTag: true,
+  checkIsAllowed: (context, {tag}) => tag === 'hr',
+  after: (context) => {
+    context.commands.push({name: 'drawLine'});
+    return context;
+  },
+});
 const rotate180TagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'rotate180',
   before: (context) => {
@@ -168,6 +176,67 @@ const invertTagHandler = ({
     return context;
   }
 });
+const underlineTagHandler = ({
+  checkIsAllowed: (context, {tag}) => tag === 'u',
+  before: (context) => {
+    context.commands.push({name: 'underline', data: true});
+    return context;
+  },
+  after: (context) => {
+    context.commands.push({name: 'underline', data: false});
+    return context;
+  }
+});
+const doubleUnderlineTagHandler = ({
+  checkIsAllowed: (context, {tag}) => tag === 'ud',
+  before: (context) => {
+    context.commands.push({name: 'underlineThick', data: true});
+    return context;
+  },
+  after: (context) => {
+    context.commands.push({name: 'underlineThick', data: false});
+    return context;
+  }
+});
+const centerTagHandler = ({
+  checkIsAllowed: (context, {tag}) => tag === 'center',
+  before: (context) => {
+    context.alignments = context.alignments ? [...context.alignments, 'Center'] : ['Center'];
+    context.commands.push({name: 'alignCenter'});
+    return context;
+  },
+  after: (context) => {
+    context.alignments.pop();
+    context.commands.push({name: `align${context.alignments.length > 0 ? context.alignments.unshift() : 'Left'}`});
+    return context;
+  }
+});
+const leftTagHandler = ({
+  checkIsAllowed: (context, {tag}) => tag === 'left',
+  before: (context) => {
+    context.alignments = context.alignments ? [...context.alignments, 'Left'] : ['Left'];
+    context.commands.push({name: 'alignLeft'});
+    return context;
+  },
+  after: (context) => {
+    context.alignments.pop();
+    context.commands.push({name: `align${context.alignments.length > 0 ? context.alignments.unshift() : 'Left'}`});
+    return context;
+  }
+});
+const rightTagHandler = ({
+  checkIsAllowed: (context, {tag}) => tag === 'right',
+  before: (context) => {
+    context.alignments = context.alignments ? [...context.alignments, 'Right'] : ['Right'];
+    context.commands.push({name: 'alignRight'});
+    return context;
+  },
+  after: (context) => {
+    context.alignments.pop();
+    context.commands.push({name: `align${context.alignments.length > 0 ? context.alignments.unshift() : 'Left'}`});
+    return context;
+  }
+});
 
 const process = (context, node, depth) => {
   const handlersCollection = [
@@ -182,12 +251,18 @@ const process = (context, node, depth) => {
     cutTagHandler,
     beepTagHandler,
     partialCutTagHandler,
+    hrTagHandler,
 
     fontaTagHandler,
     fontbTagHandler,
     bTagHandler,
     rotate180TagHandler,
     invertTagHandler,
+    underlineTagHandler,
+    doubleUnderlineTagHandler,
+    centerTagHandler,
+    leftTagHandler,
+    rightTagHandler,
 
     divOrPTagsHandler,
 
@@ -275,114 +350,3 @@ module.exports = function(dirtyXml) {
   console.log(JSON.stringify(result, null, 2));
   return result;
 };
-
-/*
- //before
- if(tag === 'fontb' && context.isFontA) {
- commands.push({name: 'setTypeFontB'});
- context.isFontA = false;
- } else if(tag === 'b' && !context.isBold) {
- commands.push({name: 'bold', data: true});
- context.isBold = true;
- } else if(tag === 'rotate180') {
- commands.push({name: 'upsideDown', data: true});
- } else if(tag === 'invert') {
- commands.push({name: 'invert', data: true});
- } else if(tag === 'u') {
- commands.push({name: 'underline', data: true});
- } else if(tag === 'ud') {
- commands.push({name: 'underlineThick', data: true});
- } else if(tag === 'center') {
- commands.push({name: 'alignCenter'});
- context.align.push('center');
- } else if(tag === 'left') {
- commands.push({name: 'alignLeft'});
- context.align.push('left');
- } else if(tag === 'right') {
- commands.push({name: 'alignRight'});
- context.align.push('right');
- } else if(['p', 'div'].includes(tag)) {
- if(!isHasNestedTagsPresent) {
- const isBold = checkIsStyleBold(node);
- if(isBold) {
- commands.push({name: 'bold', data: true});
- }
- commands.push({name: 'println', data: node.text()});
- if(isBold) {
- commands.push({name: 'bold', data: false});
- }
- return;
- } else if(commands.unshift() && !['println', 'newLine'].includes(commands.unshift().name)) {
- commands.push({name: 'newLine'});
- }
- } else if(tag === 'tr') {
- context.isTable = true;
- } else if(tag === 'opencashdrawer') {
- commands.push({name: 'openCashDrawer'});
- return;
- } else if(tag === 'cut') {
- commands.push({name: 'cut'});
- return;
- } else if(tag === 'partialcut') {
- commands.push({name: 'partialCut'});
- return;
- } else if(tag === 'beep') {
- commands.push({name: 'beep'});
- return;
- } else if(tag === 'hr') {
- commands.push({name: 'drawLine'});
- return;
- }
- //in
- if(tag !== 'td') {
- for(let i=0; i<innerNodes.length; i++) {
- const innerNode = innerNodes[i];
- process(innerNode, depth+1);
- }
- }
- //after
- if(tag === 'fonta' && context.isFontA) {
- commands.push({name: 'setTypeFontB'});
- context.isFontA = false;
- } else if(tag === 'fontb' && !context.isFontA) {
- commands.push({name: 'setTypeFontA'});
- context.isFontA = true;
- } else if(tag === 'b' && context.isBold) {
- commands.push({name: 'bold', data: false});
- context.isBold = false;
- } else if(tag === 'rotate180') {
- commands.push({name: 'upsideDown', data: false});
- } else if(tag === 'u') {
- commands.push({name: 'underline', data: false});
- } else if(tag === 'ud') {
- commands.push({name: 'underlineThick', data: false});
- } else if(['center', 'left', 'right'].includes(tag)) {
- context.align.pop();
- switch(context.align.unshift()) {
- case 'right': commands.push({name: 'alignRight'}); break;
- case 'center': commands.push({name: 'alignCenter'}); break;
- default:
- case 'left': commands.push({name: 'alignLeft'}); break;
- }
- } else if(tag === 'invert') {
- commands.push({name: 'invert', data: false});
- } else if(tag === 'tr') {
- commands.push({name: 'tableCustom', data: context.data});
- context.data = [];
- context.isTable = false;
- } else if(tag === 'td') {
- const attrs = node.attrs().map(attr => ({name: attr.name(), value: attr.value()}))
- .reduce((acc, {name, value}) => ({...acc, [name]: convertType(value)}), {});
- if(/<b>.+<\/b>/.test(node.toString()) || checkIsStyleBold(node)) {
- attrs.bold = true;
- delete attrs.style;
- }
- context.data.push({...attrs, text: node.text()});
- } else if(tag === 'br') {
- commands.push({name: 'newLine'});
- } else if(depth > 0 && !context.isTable) {
- commands.push({name: 'print', data: node.text()});
- } else if(!isHasNestedTagsPresent && !context.isTable) {
- commands.push({name: 'println', data: node.text()});
- }
- */
