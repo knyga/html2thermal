@@ -161,7 +161,7 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  it('has special treatment for table cells boldness', function () {
+  it.only('has special treatment for table cells boldness', function () {
     const template = `
     <table>
         <tr>

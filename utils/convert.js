@@ -55,7 +55,7 @@ const tdTagHandler = ({
     context.isTable = true;
     return context;
   },
-  during: () => null,
+  during: (context) => context,
   after: (context, {node}) => {
     const attrs = node.attrs().map(attr => ({name: attr.name(), value: attr.value()}))
       .reduce((acc, {name, value}) => ({...acc, [name]: convertType(value)}), {});
@@ -216,47 +216,39 @@ const process = (context, node, depth) => {
     innerNodes: node.childNodes(),
     isHasNestedTagsPresent: checkIsNestedTagsPresent(node),
   };
-  // before
-  for(let i=0; i<handlersCollection.length; i++) {
-    const handler = handlersCollection[i];
-    if(handler.before && handler.checkIsAllowed(context, nodeGroup, depth)) {
-      const result = handler.before(context, nodeGroup, depth);
-      if(result !== null) {
-        context = result;
-        if(!handler.isMultiCheck) {
-          break;
-        }
-      }
+  // find current handler
+  const handlers = handlersCollection.filter(handler => handler.checkIsAllowed(context, nodeGroup, depth));
+  // remove notagHandler if found anything
+  if(handlers.length > 1) {
+    handlers.pop();
+  }
+  for(let i=0; i<handlers.length; i++) {
+    const {before} = handlers[i];
+    if(before) {
+      const result = before(context, nodeGroup, depth);
+      context = result === null ? context : result;
     }
   }
-  // during
-  const customDuringHandlers = handlersCollection
-    .filter(handler => handler.during  && handler.checkIsAllowed(context, nodeGroup, depth));
-  if(customDuringHandlers.length === 0) {
+  const withDuringHandlers = handlers.filter(handler => handler.during);
+  if(withDuringHandlers.length > 0) {
+    for(let i=0; i<withDuringHandlers.length; i++) {
+      const {during} = withDuringHandlers[i];
+      if(during) {
+        const result = during(context, nodeGroup, depth);
+        context = result === null ? context : result;
+      }
+    }
+  } else {
     for(let i=0; i<nodeGroup.innerNodes.length; i++) {
       const innerNode = nodeGroup.innerNodes[i];
       context = process(context, innerNode, depth+1);
     }
-  } else {
-    for(let i=0; i<customDuringHandlers.length; i++) {
-      const customHandler = customDuringHandlers[i];
-      const result = customHandler.during(context, nodeGroup, depth);
-      if(result !== null) {
-        context = result;
-      }
-    }
   }
-  // after
-  for(let i=0; i<handlersCollection.length; i++) {
-    const handler = handlersCollection[i];
-    if(handler.after && handler.checkIsAllowed(context, nodeGroup, depth)) {
-      const result = handler.after(context, nodeGroup, depth);
-      if(result !== null) {
-        context = result;
-        if(!handler.isMultiCheck) {
-          break;
-        }
-      }
+  for(let i=0; i<handlers.length; i++) {
+    const {after} = handlers[i];
+    if(after) {
+      const result = after(context, nodeGroup, depth);
+      context = result === null ? context : result;
     }
   }
   return context;
