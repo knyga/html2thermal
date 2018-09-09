@@ -132,6 +132,13 @@ const opencashdrawerTagHandler = ({
     return context;
   },
 });
+const cutTagHandler = ({
+  checkIsAllowed: (context, {tag}) => tag === 'cut',
+  after: (context) => {
+    context.commands.push({name: 'cut'});
+    return context;
+  },
+});
 
 const process = (context, node, depth) => {
   const handlersCollection = [
@@ -145,6 +152,7 @@ const process = (context, node, depth) => {
     divOrPTagsHandler,
     bTagHandler,
     opencashdrawerTagHandler,
+    cutTagHandler,
     notagHandler,
   ];
   const nodeGroup = {

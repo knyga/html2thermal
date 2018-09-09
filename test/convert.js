@@ -209,12 +209,12 @@ me</p>
     assert(_.isEqual(convert('<p>1</p><opencashdrawer />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'openCashDrawer'}]));
   });
 
-//   it('cut works', function() {
-//     assert(_.isEqual(convert('<cut/>'), [{name: 'cut'}]));
-//     assert(_.isEqual(convert('<cut />'), [{name: 'cut'}]));
-//     assert(_.isEqual(convert('<p>1</p><cut />'), [{name: 'println', data: '1'}, {name: 'cut'}]));
-//   });
-//
+  it('cut works', function() {
+    assert(_.isEqual(convert('<cut/>'), [{name: 'cut'}]));
+    assert(_.isEqual(convert('<cut />'), [{name: 'cut'}]));
+    assert(_.isEqual(convert('<p>1</p><cut />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'cut'}]));
+  });
+
 //   it('partialCut works', function() {
 //     assert(_.isEqual(convert('<partialcut/>'), [{name: 'partialCut'}]));
 //     assert(_.isEqual(convert('<partialcut />'), [{name: 'partialCut'}]));
