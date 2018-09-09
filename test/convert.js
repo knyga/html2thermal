@@ -690,6 +690,7 @@ me</p>
       {name: 'print', data: 'oneone'},
       {name: 'bold', data: false},
       {name: 'newLine'},
+      {name: 'setTextNormal'},
       {name: "print", data: "123"},
       {name: "newLine"},
       {name: "print", data: "456"},
@@ -699,32 +700,34 @@ me</p>
     assert(_.isEqual(convert(template), exptectedResult));
   });
 
-  it.only('normal/doubleheight/doublewidth/quadcore tags', function () {
+  it('normal/doubleheight/doublewidth/quadarea tags', function () {
     const template = `
-    <p><doubleheight>12<doublewidth>34<normal>7</normal></doublewidth></doubleheight></p>
-    <quadcore>777</quadcore>
+    <p><doubleheight>12<doublewidth>34<normal>7</normal>8</doublewidth>9</doubleheight>0</p>
+    <quadarea>777</quadarea>
 `;
 
     const exptectedResult = [
-      {name: 'setTextNormal'},
-      {name: 'bold', data: true},
-      {name: 'print', data: 'dsdasdas'},
-      {name: 'bold', data: false},
-      {name: 'newLine'},
-      {name: 'bold', data: true},
-      {name: 'print', data: 'oneone'},
-      {name: 'bold', data: false},
-      {name: 'newLine'},
-      {name: "print", data: "123"},
+      {name: "setTextDoubleHeight"},
+      {name: "print", data: "12"},
+      {name: "setTextDoubleWidth"},
+      {name: "print", data: "34"},
+      {name: "setTextNormal"},
+      {name: "print", data: "7"},
+      {name: "setTextDoubleWidth"},
+      {name: "print", data: "8"},
+      {name: "setTextDoubleHeight"},
+      {name: "print", data: "9"},
+      {name: "setTextNormal"},
+      {name: "print", data: "0"},
       {name: "newLine"},
-      {name: "print", data: "456"},
-      {name: "newLine"},
+      {name: "setTextQuadArea"},
+      {name: "print", data: "777"},
+      {name: "setTextNormal"},
     ];
 
     assert(_.isEqual(convert(template), exptectedResult));
   });
-
-  // general tags
+  
   // code128
   // qr
   // image

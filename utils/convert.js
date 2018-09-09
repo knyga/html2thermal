@@ -207,7 +207,7 @@ const centerTagHandler = ({
   },
   after: (context) => {
     context.alignments.pop();
-    context.commands.push({name: `align${context.alignments.length > 0 ? context.alignments.unshift() : 'Left'}`});
+    context.commands.push({name: `align${context.alignments.length > 0 ? context.alignments.slice(-1).pop() : 'Left'}`});
     return context;
   }
 });
@@ -220,7 +220,7 @@ const leftTagHandler = ({
   },
   after: (context) => {
     context.alignments.pop();
-    context.commands.push({name: `align${context.alignments.length > 0 ? context.alignments.unshift() : 'Left'}`});
+    context.commands.push({name: `align${context.alignments.length > 0 ? context.alignments.slice(-1).pop() : 'Left'}`});
     return context;
   }
 });
@@ -233,7 +233,7 @@ const rightTagHandler = ({
   },
   after: (context) => {
     context.alignments.pop();
-    context.commands.push({name: `align${context.alignments.length > 0 ? context.alignments.unshift() : 'Left'}`});
+    context.commands.push({name: `align${context.alignments.length > 0 ? context.alignments.slice(-1).pop() : 'Left'}`});
     return context;
   }
 });
@@ -246,7 +246,7 @@ const doubleHeightTagHandler = ({
   },
   after: (context) => {
     context.textStyles.pop();
-    context.commands.push({name: `setText${context.textStyles.length > 0 ? context.textStyles.unshift() : 'Normal'}`});
+    context.commands.push({name: `setText${context.textStyles.length > 0 ? context.textStyles.slice(-1).pop() : 'Normal'}`});
     return context;
   }
 });
@@ -259,7 +259,7 @@ const doubleWidthTagHandler = ({
   },
   after: (context) => {
     context.textStyles.pop();
-    context.commands.push({name: `setText${context.textStyles.length > 0 ? context.textStyles.unshift() : 'Normal'}`});
+    context.commands.push({name: `setText${context.textStyles.length > 0 ? context.textStyles.slice(-1).pop() : 'Normal'}`});
     return context;
   }
 });
@@ -272,7 +272,7 @@ const quadAreaTagHandler = ({
   },
   after: (context) => {
     context.textStyles.pop();
-    context.commands.push({name: `setText${context.textStyles.length > 0 ? context.textStyles.unshift() : 'Normal'}`});
+    context.commands.push({name: `setText${context.textStyles.length > 0 ? context.textStyles.slice(-1).pop() : 'Normal'}`});
     return context;
   }
 });
@@ -281,6 +281,11 @@ const normalTagHandler = ({
   before: (context) => {
     context.textStyles = context.textStyles ? [...context.textStyles, 'Normal'] : ['Normal'];
     context.commands.push({name: 'setTextNormal'});
+    return context;
+  },
+  after: (context) => {
+    context.textStyles.pop();
+    context.commands.push({name: `setText${context.textStyles.length > 0 ? context.textStyles.slice(-1).pop() : 'Normal'}`});
     return context;
   }
 });
@@ -339,7 +344,7 @@ const process = (context, node, depth) => {
   }
   for(let i=0; i<handlers.length; i++) {
     const {before, stackName: handlerStackName, isWithoutClosingTag} = handlers[i];
-    const stackName = handlerStackName ? handlerStackName : nodeGroup.tag;
+    const stackName = [null, undefined].includes(handlerStackName) ? nodeGroup.tag : handlerStackName;
     if(before && (!context.stack[stackName] || isWithoutClosingTag)) {
       const result = before(context, nodeGroup, depth);
       context = result === null ? context : result;
@@ -363,7 +368,7 @@ const process = (context, node, depth) => {
   }
   for(let i=0; i<handlers.length; i++) {
     const {after, stackName: handlerStackName, isWithoutClosingTag} = handlers[i];
-    const stackName = handlerStackName ? handlerStackName : nodeGroup.tag;
+    const stackName = [null, undefined].includes(handlerStackName) ? nodeGroup.tag : handlerStackName;
     if(after && (context.stack[stackName] || isWithoutClosingTag)) {
       const result = after(context, nodeGroup, depth);
       context = result === null ? context : result;
