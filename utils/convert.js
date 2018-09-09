@@ -51,7 +51,14 @@ const trTagHandler = ({
 });
 const tdTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'td',
-  before: (context) => {
+  checkIsBold: (node) => {
+    if(/<b>.+<\/b>/.test(node.toString()) || checkIsStyleBold(node)) {
+      return true;
+    }
+    return false;
+  },
+  before: (context, {node}) => {
+    if(tdTagHandler.checkIsBold(node)) context.isBold = true;
     context.isTable = true;
     return context;
   },
@@ -59,9 +66,10 @@ const tdTagHandler = ({
   after: (context, {node}) => {
     const attrs = node.attrs().map(attr => ({name: attr.name(), value: attr.value()}))
       .reduce((acc, {name, value}) => ({...acc, [name]: convertType(value)}), {});
-    if(/<b>.+<\/b>/.test(node.toString()) || checkIsStyleBold(node)) {
+    if(tdTagHandler.checkIsBold(node)) {
       attrs.bold = true;
       delete attrs.style;
+      context.isBold = false;
     }
     context.data.push({...attrs, text: node.text()});
     return context;
