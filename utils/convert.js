@@ -462,3 +462,7 @@ module.exports = function(dirtyXml) {
   console.log(JSON.stringify(result, null, 2));
   return result;
 };
+
+// TODO move sanitizeHtml to handlers
+// TODO check if styles bold and b tag could be merged
+// change structure src, multiple files

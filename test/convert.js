@@ -727,7 +727,7 @@ me</p>
 
     assert(_.isEqual(convert(template), exptectedResult));
   });
-  
+
   describe('code128', function() {
     it('code128 simple', function() {
       assert(_.isEqual(convert('<code128 data="xxxyyy" />'), [{name: 'code128', data: 'xxxyyy'}]));
@@ -777,8 +777,5 @@ me</p>
   // qr
   // image
   // getWidth?? testWidth - что нет переносов
-  // center
-  // left
-  // right
   // remove mustache - outside of the convert
 });
