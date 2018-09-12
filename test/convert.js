@@ -727,13 +727,53 @@ me</p>
 
     assert(_.isEqual(convert(template), exptectedResult));
   });
+  
+  describe('code128', function() {
+    it('code128 simple', function() {
+      assert(_.isEqual(convert('<code128 data="xxxyyy" />'), [{name: 'code128', data: 'xxxyyy'}]));
+      assert(_.isEqual(convert('<code128 data="123"></code128>'), [{name: 'code128', data: '123'}]));
+    });
 
-  it('code128', function() {
-    assert(_.isEqual(convert('<code128 data="xxxyyy" />'), [{name: 'code128', data: 'xxxyyy'}]));
-    assert(_.isEqual(convert('<code128 data="123"></code128>'), [{name: 'code128', data: '123'}]));
+    it('code128 attributes', function() {
+      assert(_.isEqual(convert('<code128 data="xxxyyy" width="SMALL" height="50" />'),
+        [{name: 'code128', data: 'xxxyyy', width: 'SMALL', height: 50}]));
+    });
+
+    it('code128 width is one of: SMALL/MEDIUM/LARGE', function() {
+      assert(_.isEqual(convert('<code128 data="xxxyyy" width="15" />'), [{name: 'code128', data: 'xxxyyy'}]));
+      assert(_.isEqual(convert('<code128 data="xxxyyy" width="XX" />'), [{name: 'code128', data: 'xxxyyy'}]));
+      assert(_.isEqual(convert('<code128 data="xxxyyy" width="large" />'),
+        [{name: 'code128', data: 'xxxyyy', width: 'LARGE'}]));
+      assert(_.isEqual(convert('<code128 data="xxxyyy" width="MediuM" />'),
+        [{name: 'code128', data: 'xxxyyy', width: 'MEDIUM'}]));
+    });
+
+    it('code128 has height between 50 and 80', function() {
+      assert(_.isEqual(convert('<code128 data="xxxyyy" height="49" />'), [{name: 'code128', data: 'xxxyyy', height: 50}]));
+      assert(_.isEqual(convert('<code128 data="xxxyyy" height="62" />'), [{name: 'code128', data: 'xxxyyy', height: 62}]));
+      assert(_.isEqual(convert('<code128 data="xxxyyy" height="81" />'), [{name: 'code128', data: 'xxxyyy', height: 80}]));
+    });
+
+    it('code128 supports attr text-no', function() {
+      assert(_.isEqual(convert('<code128 data="xxxyyy" text-no />'), [{name: 'code128', data: 'xxxyyy', text: 1}]));
+    });
+
+    it('code128 supports attr text-bottom', function() {
+      assert(_.isEqual(convert('<code128 data="xxxyyy" text-bottom />'), [{name: 'code128', data: 'xxxyyy', text: 2}]));
+    });
+
+    it('code128 supports attr text-no-inline', function() {
+      assert(_.isEqual(convert('<code128 data="xxxyyy" text-no-inline />'), [{name: 'code128', data: 'xxxyyy', text: 3}]));
+    });
+
+    it('code128 supports attr text-bottom-inline', function() {
+      assert(_.isEqual(convert('<code128 data="xxxyyy" text-bottom-inline />'), [{name: 'code128', data: 'xxxyyy', text: 4}]));
+    });
   });
 
-  // code128
+
+
+
   // qr
   // image
   // getWidth?? testWidth - что нет переносов

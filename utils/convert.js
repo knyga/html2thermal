@@ -1,10 +1,10 @@
 const _ = require('lodash');
 const sanitizeHtml = require('sanitize-html');
 const {parseXml} = require('libxmljs');
-const convertType = require('./convertType');
 const getTag = require('./getTag');
 const checkIsNestedTagsPresent = require('./checkIsNestedTagsPresent');
 const checkIsStyleBold = require('./checkIsStyleBold');
+const getAttrs = require('./getAttrs');
 
 const fontaTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'fonta',
@@ -50,9 +50,7 @@ const tdTagHandler = ({
     return false;
   },
   during: (context) => context,
-  after: (context, {node}) => {
-    const attrs = node.attrs().map(attr => ({name: attr.name(), value: attr.value()}))
-      .reduce((acc, {name, value}) => ({...acc, [name]: convertType(value)}), {});
+  after: (context, {node, attrs}) => {
     if(tdTagHandler.checkIsBold(node)) {
       attrs.bold = true;
       delete attrs.style;
@@ -279,8 +277,41 @@ const quadAreaTagHandler = ({
 const code128TagHandler = ({
   isWithoutClosingTag: true,
   checkIsAllowed: (context, {tag}) => tag === 'code128',
-  after: (context, {node}) => {
-    context.commands.push({name: 'code128', data: node.attr('data').value()});
+  after: (context, {node, attrs}) => {
+    const formattedAttrs = Object.keys(attrs).reduce((acc, name) => {
+      const value = attrs[name];
+      switch(name) {
+        case 'width':
+          const width = _.isString(value) ? value.toUpperCase() : '';
+          if(['SMALL', 'MEDIUM', 'LARGE'].includes(width)) {
+            acc.width = value.toUpperCase();
+          }
+          break;
+        case 'height':
+          if(value < 50) {
+            acc.height = 50;
+          } else if(value > 80) {
+            acc.height = 80;
+          } else {
+            acc.height = value;
+          }
+          break;
+        case 'text-no':
+          acc.text = 1;
+          break;
+        case 'text-bottom':
+          acc.text = 2;
+          break;
+        case 'text-no-inline':
+          acc.text = 3;
+          break;
+        case 'text-bottom-inline':
+          acc.text = 4;
+          break;
+      }
+      return acc;
+    }, {});
+    context.commands.push({...formattedAttrs, name: 'code128', data: attrs.data.toString() });
     return context;
   },
 });
@@ -338,6 +369,7 @@ const process = (context, node, depth) => {
     tag: getTag(node),
     innerNodes: node.childNodes(),
     isHasNestedTagsPresent: checkIsNestedTagsPresent(node),
+    attrs: getAttrs(node),
   };
   // find current handler
   let handlers = handlersCollection.filter(handler => handler.checkIsAllowed(context, nodeGroup, depth));
@@ -404,11 +436,24 @@ module.exports = function(dirtyXml) {
     allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta', 'opencashdrawer', 'cut', 'partialcut', 'beep',
       'rotate180', 'invert', 'u', 'ud', 'hr', 'center', 'left', 'right', 'doubleheight', 'doublewidth', 'quadarea',
       'normal', 'code128'],
+    transformTags: {
+      code128: function(tagName, attribs) {
+        const extendAttrs = ['text-no', 'text-bottom', 'text-no-inline', 'text-bottom-inline'];
+        for(let i=0; i<extendAttrs.length; i++) {
+          const attr = extendAttrs[i];
+          if(attribs.hasOwnProperty(attr)) {
+            attribs[attr] = attr;
+          }
+        }
+
+        return {tagName, attribs};
+      },
+    },
     allowedAttributes: {
       td: ['width', 'align', 'bold', 'style'],
       p: ['style'],
       div: ['style'],
-      code128: ['data'],
+      code128: ['data', 'width', 'height', 'text-no', 'text-bottom', 'text-no-inline', 'text-bottom-inline'],
     },
   });
 
