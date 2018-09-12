@@ -727,7 +727,12 @@ me</p>
 
     assert(_.isEqual(convert(template), exptectedResult));
   });
-  
+
+  it('code128', function() {
+    assert(_.isEqual(convert('<code128 data="xxxyyy" />'), [{name: 'code128', data: 'xxxyyy'}]));
+    assert(_.isEqual(convert('<code128 data="123"></code128>'), [{name: 'code128', data: '123'}]));
+  });
+
   // code128
   // qr
   // image

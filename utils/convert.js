@@ -276,6 +276,14 @@ const quadAreaTagHandler = ({
     return context;
   }
 });
+const code128TagHandler = ({
+  isWithoutClosingTag: true,
+  checkIsAllowed: (context, {tag}) => tag === 'code128',
+  after: (context, {node}) => {
+    context.commands.push({name: 'code128', data: node.attr('data').value()});
+    return context;
+  },
+});
 const normalTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'normal',
   before: (context) => {
@@ -304,6 +312,7 @@ const process = (context, node, depth) => {
     beepTagHandler,
     partialCutTagHandler,
     hrTagHandler,
+    code128TagHandler,
 
     fontaTagHandler,
     fontbTagHandler,
@@ -394,11 +403,12 @@ module.exports = function(dirtyXml) {
   const cleanXml = sanitizeHtml(dirtyXml, {
     allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta', 'opencashdrawer', 'cut', 'partialcut', 'beep',
       'rotate180', 'invert', 'u', 'ud', 'hr', 'center', 'left', 'right', 'doubleheight', 'doublewidth', 'quadarea',
-      'normal'],
+      'normal', 'code128'],
     allowedAttributes: {
       td: ['width', 'align', 'bold', 'style'],
       p: ['style'],
       div: ['style'],
+      code128: ['data'],
     },
   });
 
