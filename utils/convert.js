@@ -15,7 +15,10 @@ const fontaTagHandler = ({
   after: (context) => {
     context.commands.push({name: 'setTypeFontB'});
     return context;
-  }
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'fonta' ],
+  },
 });
 const fontbTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'fontb',
@@ -26,7 +29,10 @@ const fontbTagHandler = ({
   after: (context) => {
     context.commands.push({name: 'setTypeFontA'});
     return context;
-  }
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'fontb' ],
+  },
 });
 const trTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'tr',
@@ -38,7 +44,10 @@ const trTagHandler = ({
     context.commands.push({name: 'tableCustom', data: context.data});
     context.data = [];
     return context;
-  }
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'tr' ],
+  },
 });
 const tdTagHandler = ({
   isIgnoreOtherHandlers: true,
@@ -57,6 +66,12 @@ const tdTagHandler = ({
     }
     context.data.push({...attrs, text: node.text()});
     return context;
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'td' ],
+    allowedAttributes: {
+      td: ['width', 'align', 'bold', 'style'],
+    },
   }
 });
 const divOrPTagsHandler = ({
@@ -64,6 +79,13 @@ const divOrPTagsHandler = ({
   after: (context) => {
     context.commands.push({name: 'newLine'});
     return context;
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'div', 'p' ],
+    allowedAttributes: {
+      p: [ 'style' ],
+      div: [ 'style' ],
+    },
   },
 });
 const notagHandler = ({
@@ -78,7 +100,7 @@ const notagHandler = ({
       return context;
     }
     return null;
-  }
+  },
 });
 const bTagHandler = ({
   stackName: 'bold',
@@ -90,7 +112,10 @@ const bTagHandler = ({
   after: (context) => {
     context.commands.push({name: 'bold', data: false});
     return context;
-  }
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'b' ],
+  },
 });
 const boldFontStyleHandler = ({
   stackName: 'bold',
@@ -102,6 +127,11 @@ const boldFontStyleHandler = ({
   after: (context) => {
     context.commands.push({name: 'bold', data: false});
     return context;
+  },
+  sanitizeHtml: {
+    allowedAttributes: {
+      '*': [ 'style' ],
+    },
   }
 });
 const brTagHandler = ({
@@ -111,6 +141,9 @@ const brTagHandler = ({
     context.commands.push({name: 'newLine'});
     return context;
   },
+  sanitizeHtml: {
+    allowedTags: [ 'br' ],
+  },
 });
 const openCashDrawerTagHandler = ({
   isWithoutClosingTag: true,
@@ -118,6 +151,9 @@ const openCashDrawerTagHandler = ({
   after: (context) => {
     context.commands.push({name: 'openCashDrawer'});
     return context;
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'opencashdrawer' ],
   },
 });
 const cutTagHandler = ({
@@ -127,6 +163,9 @@ const cutTagHandler = ({
     context.commands.push({name: 'cut'});
     return context;
   },
+  sanitizeHtml: {
+    allowedTags: [ 'cut' ],
+  },
 });
 const beepTagHandler = ({
   isWithoutClosingTag: true,
@@ -134,6 +173,9 @@ const beepTagHandler = ({
   after: (context) => {
     context.commands.push({name: 'beep'});
     return context;
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'beep' ],
   },
 });
 const partialCutTagHandler = ({
@@ -143,6 +185,9 @@ const partialCutTagHandler = ({
     context.commands.push({name: 'partialCut'});
     return context;
   },
+  sanitizeHtml: {
+    allowedTags: [ 'partialcut' ],
+  },
 });
 const hrTagHandler = ({
   isWithoutClosingTag: true,
@@ -150,6 +195,9 @@ const hrTagHandler = ({
   after: (context) => {
     context.commands.push({name: 'drawLine'});
     return context;
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'hr' ],
   },
 });
 const rotate180TagHandler = ({
@@ -161,7 +209,10 @@ const rotate180TagHandler = ({
   after: (context) => {
     context.commands.push({name: 'upsideDown', data: false});
     return context;
-  }
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'rotate180' ],
+  },
 });
 const invertTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'invert',
@@ -172,7 +223,10 @@ const invertTagHandler = ({
   after: (context) => {
     context.commands.push({name: 'invert', data: false});
     return context;
-  }
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'invert' ],
+  },
 });
 const underlineTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'u',
@@ -183,7 +237,10 @@ const underlineTagHandler = ({
   after: (context) => {
     context.commands.push({name: 'underline', data: false});
     return context;
-  }
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'u' ],
+  },
 });
 const doubleUnderlineTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'ud',
@@ -194,7 +251,10 @@ const doubleUnderlineTagHandler = ({
   after: (context) => {
     context.commands.push({name: 'underlineThick', data: false});
     return context;
-  }
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'ud' ],
+  },
 });
 const centerTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'center',
@@ -207,7 +267,10 @@ const centerTagHandler = ({
     context.alignments.pop();
     context.commands.push({name: `align${context.alignments.length > 0 ? context.alignments.slice(-1).pop() : 'Left'}`});
     return context;
-  }
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'center' ],
+  },
 });
 const leftTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'left',
@@ -220,7 +283,10 @@ const leftTagHandler = ({
     context.alignments.pop();
     context.commands.push({name: `align${context.alignments.length > 0 ? context.alignments.slice(-1).pop() : 'Left'}`});
     return context;
-  }
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'left' ],
+  },
 });
 const rightTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'right',
@@ -233,7 +299,10 @@ const rightTagHandler = ({
     context.alignments.pop();
     context.commands.push({name: `align${context.alignments.length > 0 ? context.alignments.slice(-1).pop() : 'Left'}`});
     return context;
-  }
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'right' ],
+  },
 });
 const doubleHeightTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'doubleheight',
@@ -246,7 +315,10 @@ const doubleHeightTagHandler = ({
     context.textStyles.pop();
     context.commands.push({name: `setText${context.textStyles.length > 0 ? context.textStyles.slice(-1).pop() : 'Normal'}`});
     return context;
-  }
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'doubleheight' ],
+  },
 });
 const doubleWidthTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'doublewidth',
@@ -259,7 +331,10 @@ const doubleWidthTagHandler = ({
     context.textStyles.pop();
     context.commands.push({name: `setText${context.textStyles.length > 0 ? context.textStyles.slice(-1).pop() : 'Normal'}`});
     return context;
-  }
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'doublewidth' ],
+  },
 });
 const quadAreaTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'quadarea',
@@ -272,7 +347,10 @@ const quadAreaTagHandler = ({
     context.textStyles.pop();
     context.commands.push({name: `setText${context.textStyles.length > 0 ? context.textStyles.slice(-1).pop() : 'Normal'}`});
     return context;
-  }
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'quadarea' ],
+  },
 });
 const code128TagHandler = ({
   isWithoutClosingTag: true,
@@ -314,6 +392,25 @@ const code128TagHandler = ({
     context.commands.push({...formattedAttrs, name: 'code128', data: attrs.data.toString() });
     return context;
   },
+  sanitizeHtml: {
+    allowedTags: [ 'code128' ],
+    transformTags: {
+      code128: function(tagName, attribs) {
+        const extendAttrs = ['text-no', 'text-bottom', 'text-no-inline', 'text-bottom-inline'];
+        for(let i=0; i<extendAttrs.length; i++) {
+          const attr = extendAttrs[i];
+          if(attribs.hasOwnProperty(attr)) {
+            attribs[attr] = attr;
+          }
+        }
+
+        return {tagName, attribs};
+      },
+    },
+    allowedAttributes: {
+      code128: ['data', 'width', 'height', 'text-no', 'text-bottom', 'text-no-inline', 'text-bottom-inline'],
+    },
+  },
 });
 const normalTagHandler = ({
   checkIsAllowed: (context, {tag}) => tag === 'normal',
@@ -326,44 +423,48 @@ const normalTagHandler = ({
     context.textStyles.pop();
     context.commands.push({name: `setText${context.textStyles.length > 0 ? context.textStyles.slice(-1).pop() : 'Normal'}`});
     return context;
-  }
+  },
+  sanitizeHtml: {
+    allowedTags: [ 'normal' ],
+  },
 });
 
+const handlersCollection = [
+  // order matters
+  trTagHandler,
+  tdTagHandler,
+
+  boldFontStyleHandler,
+
+  brTagHandler,
+  openCashDrawerTagHandler,
+  cutTagHandler,
+  beepTagHandler,
+  partialCutTagHandler,
+  hrTagHandler,
+  code128TagHandler,
+
+  fontaTagHandler,
+  fontbTagHandler,
+  bTagHandler,
+  rotate180TagHandler,
+  invertTagHandler,
+  underlineTagHandler,
+  doubleUnderlineTagHandler,
+  centerTagHandler,
+  leftTagHandler,
+  rightTagHandler,
+  doubleHeightTagHandler,
+  doubleWidthTagHandler,
+  quadAreaTagHandler,
+  normalTagHandler,
+
+  divOrPTagsHandler,
+
+  notagHandler,
+];
+
 const process = (context, node, depth) => {
-  const handlersCollection = [
-    // order matters
-    trTagHandler,
-    tdTagHandler,
-
-    boldFontStyleHandler,
-
-    brTagHandler,
-    openCashDrawerTagHandler,
-    cutTagHandler,
-    beepTagHandler,
-    partialCutTagHandler,
-    hrTagHandler,
-    code128TagHandler,
-
-    fontaTagHandler,
-    fontbTagHandler,
-    bTagHandler,
-    rotate180TagHandler,
-    invertTagHandler,
-    underlineTagHandler,
-    doubleUnderlineTagHandler,
-    centerTagHandler,
-    leftTagHandler,
-    rightTagHandler,
-    doubleHeightTagHandler,
-    doubleWidthTagHandler,
-    quadAreaTagHandler,
-    normalTagHandler,
-
-    divOrPTagsHandler,
-
-    notagHandler,
-  ];
   const nodeGroup = {
     node,
     tag: getTag(node),
@@ -431,38 +532,35 @@ const convert = (xml) => {
   return context.commands;
 };
 
+const reduceSanitizeHtml = (sanitizers) => sanitizers.reduce((acc, val) => {
+  if(!val) {
+    return acc;
+  }
+
+  const allowedAttributes = Object.keys(val.allowedAttributes || {}).reduce((tags, tag) => ({
+    ...tags,
+    [tag]: tags.hasOwnProperty(tag) ? [...tags[tag], ...val.allowedAttributes[tag]] : val.allowedAttributes[tag],
+  }), acc.allowedAttributes || {});
+
+  return {
+    ...acc,
+    ...val,
+    allowedTags: [
+      ...(acc.allowedTags || []),
+      ...(val.allowedTags || [])
+    ],
+    allowedAttributes,
+  };
+}, {});
+
 module.exports = function(dirtyXml) {
-  const cleanXml = sanitizeHtml(dirtyXml, {
-    allowedTags: [ 'div', 'p', 'td', 'tr', 'br', 'b', 'fontb', 'fonta', 'opencashdrawer', 'cut', 'partialcut', 'beep',
-      'rotate180', 'invert', 'u', 'ud', 'hr', 'center', 'left', 'right', 'doubleheight', 'doublewidth', 'quadarea',
-      'normal', 'code128'],
-    transformTags: {
-      code128: function(tagName, attribs) {
-        const extendAttrs = ['text-no', 'text-bottom', 'text-no-inline', 'text-bottom-inline'];
-        for(let i=0; i<extendAttrs.length; i++) {
-          const attr = extendAttrs[i];
-          if(attribs.hasOwnProperty(attr)) {
-            attribs[attr] = attr;
-          }
-        }
-
-        return {tagName, attribs};
-      },
-    },
-    allowedAttributes: {
-      td: ['width', 'align', 'bold', 'style'],
-      p: ['style'],
-      div: ['style'],
-      code128: ['data', 'width', 'height', 'text-no', 'text-bottom', 'text-no-inline', 'text-bottom-inline'],
-    },
-  });
-
+  const sanitizerObject = reduceSanitizeHtml(handlersCollection.map(handler => handler.sanitizeHtml));
+  const cleanXml = sanitizeHtml(dirtyXml, sanitizerObject);
   const result = convert(cleanXml);
   console.log('-----');
   console.log(JSON.stringify(result, null, 2));
   return result;
 };
 
-// TODO move sanitizeHtml to handlers
 // TODO check if styles bold and b tag could be merged
 // change structure src, multiple files
