@@ -6,7 +6,7 @@ const checkIsNestedTagsPresent = require('./checkIsNestedTagsPresent');
 const checkIsStyleBold = require('./checkIsStyleBold');
 const getAttrs = require('./getAttrs');
 
-const fontaTagHandler = ({
+const fontaTagHandler = {
   checkIsAllowed: (context, {tag}) => tag === 'fonta',
   before: (context) => {
     context.commands.push({name: 'setTypeFontA'});
@@ -19,8 +19,8 @@ const fontaTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'fonta' ],
   },
-});
-const fontbTagHandler = ({
+};
+const fontbTagHandler = {
   checkIsAllowed: (context, {tag}) => tag === 'fontb',
   before: (context) => {
     context.commands.push({name: 'setTypeFontB'});
@@ -33,8 +33,8 @@ const fontbTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'fontb' ],
   },
-});
-const trTagHandler = ({
+};
+const trTagHandler = {
   checkIsAllowed: (context, {tag}) => tag === 'tr',
   before: (context) => {
     context.isTable = true;
@@ -48,8 +48,8 @@ const trTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'tr' ],
   },
-});
-const tdTagHandler = ({
+};
+const tdTagHandler = {
   isIgnoreOtherHandlers: true,
   checkIsAllowed: (context, {tag}) => tag === 'td',
   checkIsBold: (node) => {
@@ -73,8 +73,8 @@ const tdTagHandler = ({
       td: ['width', 'align', 'bold', 'style'],
     },
   }
-});
-const divOrPTagsHandler = ({
+};
+const divOrPTagsHandler = {
   checkIsAllowed: (context, {tag}) => ['div', 'p'].includes(tag),
   after: (context) => {
     context.commands.push({name: 'newLine'});
@@ -87,8 +87,8 @@ const divOrPTagsHandler = ({
       div: [ 'style' ],
     },
   },
-});
-const notagHandler = ({
+};
+const notagHandler = {
   isWithoutClosingTag: true,
   checkIsAllowed: () => true,
   after: (context, {node, isHasNestedTagsPresent}, depth) => {
@@ -101,8 +101,8 @@ const notagHandler = ({
     }
     return null;
   },
-});
-const bTagHandler = ({
+};
+const bTagHandler = {
   stackName: 'bold',
   checkIsAllowed: (context, {tag}) => tag === 'b',
   before: (context) => {
@@ -116,25 +116,17 @@ const bTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'b' ],
   },
-});
-const boldFontStyleHandler = ({
-  stackName: 'bold',
+};
+const boldFontStyleHandler = {
+  ...bTagHandler,
   checkIsAllowed: (context, {node}) => checkIsStyleBold(node),
-  before: (context) => {
-    context.commands.push({name: 'bold', data: true});
-    return context;
-  },
-  after: (context) => {
-    context.commands.push({name: 'bold', data: false});
-    return context;
-  },
   sanitizeHtml: {
     allowedAttributes: {
       '*': [ 'style' ],
     },
   }
-});
-const brTagHandler = ({
+};
+const brTagHandler = {
   isWithoutClosingTag: true,
   checkIsAllowed: (context, {tag}) => tag === 'br',
   after: (context) => {
@@ -144,8 +136,8 @@ const brTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'br' ],
   },
-});
-const openCashDrawerTagHandler = ({
+};
+const openCashDrawerTagHandler = {
   isWithoutClosingTag: true,
   checkIsAllowed: (context, {tag}) => tag === 'opencashdrawer',
   after: (context) => {
@@ -155,8 +147,8 @@ const openCashDrawerTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'opencashdrawer' ],
   },
-});
-const cutTagHandler = ({
+};
+const cutTagHandler = {
   isWithoutClosingTag: true,
   checkIsAllowed: (context, {tag}) => tag === 'cut',
   after: (context) => {
@@ -166,8 +158,8 @@ const cutTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'cut' ],
   },
-});
-const beepTagHandler = ({
+};
+const beepTagHandler = {
   isWithoutClosingTag: true,
   checkIsAllowed: (context, {tag}) => tag === 'beep',
   after: (context) => {
@@ -177,8 +169,8 @@ const beepTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'beep' ],
   },
-});
-const partialCutTagHandler = ({
+};
+const partialCutTagHandler = {
   isWithoutClosingTag: true,
   checkIsAllowed: (context, {tag}) => tag === 'partialcut',
   after: (context) => {
@@ -188,8 +180,8 @@ const partialCutTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'partialcut' ],
   },
-});
-const hrTagHandler = ({
+};
+const hrTagHandler = {
   isWithoutClosingTag: true,
   checkIsAllowed: (context, {tag}) => tag === 'hr',
   after: (context) => {
@@ -199,8 +191,8 @@ const hrTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'hr' ],
   },
-});
-const rotate180TagHandler = ({
+};
+const rotate180TagHandler = {
   checkIsAllowed: (context, {tag}) => tag === 'rotate180',
   before: (context) => {
     context.commands.push({name: 'upsideDown', data: true});
@@ -213,8 +205,8 @@ const rotate180TagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'rotate180' ],
   },
-});
-const invertTagHandler = ({
+};
+const invertTagHandler = {
   checkIsAllowed: (context, {tag}) => tag === 'invert',
   before: (context) => {
     context.commands.push({name: 'invert', data: true});
@@ -227,8 +219,8 @@ const invertTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'invert' ],
   },
-});
-const underlineTagHandler = ({
+};
+const underlineTagHandler = {
   checkIsAllowed: (context, {tag}) => tag === 'u',
   before: (context) => {
     context.commands.push({name: 'underline', data: true});
@@ -241,8 +233,8 @@ const underlineTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'u' ],
   },
-});
-const doubleUnderlineTagHandler = ({
+};
+const doubleUnderlineTagHandler = {
   checkIsAllowed: (context, {tag}) => tag === 'ud',
   before: (context) => {
     context.commands.push({name: 'underlineThick', data: true});
@@ -255,8 +247,8 @@ const doubleUnderlineTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'ud' ],
   },
-});
-const centerTagHandler = ({
+};
+const centerTagHandler = {
   checkIsAllowed: (context, {tag}) => tag === 'center',
   before: (context) => {
     context.alignments = context.alignments ? [...context.alignments, 'Center'] : ['Center'];
@@ -271,8 +263,8 @@ const centerTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'center' ],
   },
-});
-const leftTagHandler = ({
+};
+const leftTagHandler = {
   checkIsAllowed: (context, {tag}) => tag === 'left',
   before: (context) => {
     context.alignments = context.alignments ? [...context.alignments, 'Left'] : ['Left'];
@@ -287,8 +279,8 @@ const leftTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'left' ],
   },
-});
-const rightTagHandler = ({
+};
+const rightTagHandler = {
   checkIsAllowed: (context, {tag}) => tag === 'right',
   before: (context) => {
     context.alignments = context.alignments ? [...context.alignments, 'Right'] : ['Right'];
@@ -303,8 +295,8 @@ const rightTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'right' ],
   },
-});
-const doubleHeightTagHandler = ({
+};
+const doubleHeightTagHandler = {
   checkIsAllowed: (context, {tag}) => tag === 'doubleheight',
   before: (context) => {
     context.textStyles = context.textStyles ? [...context.textStyles, 'DoubleHeight'] : ['DoubleHeight'];
@@ -319,8 +311,8 @@ const doubleHeightTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'doubleheight' ],
   },
-});
-const doubleWidthTagHandler = ({
+};
+const doubleWidthTagHandler = {
   checkIsAllowed: (context, {tag}) => tag === 'doublewidth',
   before: (context) => {
     context.textStyles = context.textStyles ? [...context.textStyles, 'DoubleWidth'] : ['DoubleWidth'];
@@ -335,8 +327,8 @@ const doubleWidthTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'doublewidth' ],
   },
-});
-const quadAreaTagHandler = ({
+};
+const quadAreaTagHandler = {
   checkIsAllowed: (context, {tag}) => tag === 'quadarea',
   before: (context) => {
     context.textStyles = context.textStyles ? [...context.textStyles, 'QuadArea'] : ['QuadArea'];
@@ -351,8 +343,8 @@ const quadAreaTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'quadarea' ],
   },
-});
-const code128TagHandler = ({
+};
+const code128TagHandler = {
   isWithoutClosingTag: true,
   checkIsAllowed: (context, {tag}) => tag === 'code128',
   after: (context, {node, attrs}) => {
@@ -411,8 +403,8 @@ const code128TagHandler = ({
       code128: ['data', 'width', 'height', 'text-no', 'text-bottom', 'text-no-inline', 'text-bottom-inline'],
     },
   },
-});
-const normalTagHandler = ({
+};
+const normalTagHandler = {
   checkIsAllowed: (context, {tag}) => tag === 'normal',
   before: (context) => {
     context.textStyles = context.textStyles ? [...context.textStyles, 'Normal'] : ['Normal'];
@@ -427,7 +419,7 @@ const normalTagHandler = ({
   sanitizeHtml: {
     allowedTags: [ 'normal' ],
   },
-});
+};
 
 const handlersCollection = [
   // order matters
@@ -562,5 +554,4 @@ module.exports = function(dirtyXml) {
   return result;
 };
 
-// TODO check if styles bold and b tag could be merged
 // change structure src, multiple files
