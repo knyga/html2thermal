@@ -840,7 +840,7 @@ me</p>
     });
 
   });
-  
+
   // image
   // getWidth?? testWidth - что нет переносов
   // remove mustache - outside of the convert
