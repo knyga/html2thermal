@@ -3,7 +3,7 @@ const _ = require('lodash');
 module.exports = {
   isWithoutClosingTag: true,
   checkIsAllowed: (context, {tag}) => tag === 'qrcode',
-  after: (context, {node, attrs}) => {
+  after: (context, {attrs}) => {
     const formattedAttrs = Object.keys(attrs).reduce((acc, name) => {
       const value = attrs[name];
       switch(name) {
@@ -38,7 +38,7 @@ module.exports = {
       }
       return acc;
     }, {});
-    context.commands.push({...formattedAttrs, name: 'qrcode', data: attrs.data.toString() });
+    context.commands.push({...formattedAttrs, name: 'printQR', data: attrs.data.toString() });
     return context;
   },
   sanitizeHtml: {

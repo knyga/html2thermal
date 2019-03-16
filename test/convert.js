@@ -773,75 +773,85 @@ me</p>
 
   describe('qrcode', function() {
     it('qrcode simple', function() {
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" />'), [{name: 'qrcode', data: 'xxxyyy'}]));
-      assert(_.isEqual(convert('<qrcode data="123"></qrcode>'), [{name: 'qrcode', data: '123'}]));
+      assert(_.isEqual(convert('<qrcode data="xxxyyy" />'), [{name: 'printQR', data: 'xxxyyy'}]));
+      assert(_.isEqual(convert('<qrcode data="123"></qrcode>'), [{name: 'printQR', data: '123'}]));
     });
 
     it('qrcode attributes', function() {
       assert(_.isEqual(convert('<qrcode data="xxxyyy" cellSize="3" correction="M" model="standard" />'),
-        [{name: 'qrcode', data: 'xxxyyy', cellSize: 3, correction: 'M', model: 2}]));
+        [{name: 'printQR', data: 'xxxyyy', cellSize: 3, correction: 'M', model: 2}]));
     });
 
     it('qrcode cellsize', function() {
       assert(_.isEqual(convert('<qrcode data="xxxyyy" cellSize="1" />'),
-        [{name: 'qrcode', data: 'xxxyyy', cellSize: 1}]));
+        [{name: 'printQR', data: 'xxxyyy', cellSize: 1}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" cellSize="8" />'),
-        [{name: 'qrcode', data: 'xxxyyy', cellSize: 8}]));
+        [{name: 'printQR', data: 'xxxyyy', cellSize: 8}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" cellSize="5.3123" />'),
-        [{name: 'qrcode', data: 'xxxyyy', cellSize: 5}]));
+        [{name: 'printQR', data: 'xxxyyy', cellSize: 5}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" cellSize="9" />'),
-        [{name: 'qrcode', data: 'xxxyyy'}]));
+        [{name: 'printQR', data: 'xxxyyy'}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" cellSize="a" />'),
-        [{name: 'qrcode', data: 'xxxyyy'}]));
+        [{name: 'printQR', data: 'xxxyyy'}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" />'),
-        [{name: 'qrcode', data: 'xxxyyy'}]));
+        [{name: 'printQR', data: 'xxxyyy'}]));
     });
 
     it('qrcode correction', function() {
       assert(_.isEqual(convert('<qrcode data="xxxyyy" correction="L" />'),
-        [{name: 'qrcode', data: 'xxxyyy', correction: 'L'}]));
+        [{name: 'printQR', data: 'xxxyyy', correction: 'L'}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" correction="M" />'),
-        [{name: 'qrcode', data: 'xxxyyy', correction: 'M'}]));
+        [{name: 'printQR', data: 'xxxyyy', correction: 'M'}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" correction="Q" />'),
-        [{name: 'qrcode', data: 'xxxyyy', correction: 'Q'}]));
+        [{name: 'printQR', data: 'xxxyyy', correction: 'Q'}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" correction="H" />'),
-        [{name: 'qrcode', data: 'xxxyyy', correction: 'H'}]));
+        [{name: 'printQR', data: 'xxxyyy', correction: 'H'}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" correction="D" />'),
-        [{name: 'qrcode', data: 'xxxyyy'}]));
+        [{name: 'printQR', data: 'xxxyyy'}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" correction="A" />'),
-        [{name: 'qrcode', data: 'xxxyyy'}]));
+        [{name: 'printQR', data: 'xxxyyy'}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" />'),
-        [{name: 'qrcode', data: 'xxxyyy'}]));
+        [{name: 'printQR', data: 'xxxyyy'}]));
     });
 
     it('qrcode model', function() {
       assert(_.isEqual(convert('<qrcode data="xxxyyy" model="1" />'),
-        [{name: 'qrcode', data: 'xxxyyy', model: 1}]));
+        [{name: 'printQR', data: 'xxxyyy', model: 1}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" model="2" />'),
-        [{name: 'qrcode', data: 'xxxyyy', model: 2}]));
+        [{name: 'printQR', data: 'xxxyyy', model: 2}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" model="3" />'),
-        [{name: 'qrcode', data: 'xxxyyy', model: 3}]));
+        [{name: 'printQR', data: 'xxxyyy', model: 3}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" model="3.5" />'),
-        [{name: 'qrcode', data: 'xxxyyy', model: 3}]));
+        [{name: 'printQR', data: 'xxxyyy', model: 3}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" model="4" />'),
-        [{name: 'qrcode', data: 'xxxyyy'}]));
+        [{name: 'printQR', data: 'xxxyyy'}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" model="big" />'),
-        [{name: 'qrcode', data: 'xxxyyy', model: 1}]));
+        [{name: 'printQR', data: 'xxxyyy', model: 1}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" model="BiG" />'),
-        [{name: 'qrcode', data: 'xxxyyy', model: 1}]));
+        [{name: 'printQR', data: 'xxxyyy', model: 1}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" model="standard" />'),
-        [{name: 'qrcode', data: 'xxxyyy', model: 2}]));
+        [{name: 'printQR', data: 'xxxyyy', model: 2}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" model="micro" />'),
-        [{name: 'qrcode', data: 'xxxyyy', model: 3}]));
+        [{name: 'printQR', data: 'xxxyyy', model: 3}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" model="JVHUFDSP9UIO" />'),
-        [{name: 'qrcode', data: 'xxxyyy'}]));
+        [{name: 'printQR', data: 'xxxyyy'}]));
       assert(_.isEqual(convert('<qrcode data="xxxyyy" />'),
-        [{name: 'qrcode', data: 'xxxyyy'}]));
+        [{name: 'printQR', data: 'xxxyyy'}]));
     });
+  });
 
+  describe('image', function() {
+    it('image simple', function() {
+      assert(_.isEqual(convert('<img src="./assets/olaii-logo-black.png" />'), [{name: 'printImage', data: './assets/olaii-logo-black.png'}]));
+      assert(_.isEqual(convert('<img src="./assets/olaii-logo-black.png"></img>'), [{name: 'printImage', data: './assets/olaii-logo-black.png'}]));
+    });
   });
 
   // image
   // getWidth?? testWidth - что нет переносов
+  // pdf417
+  // maxiCode
+  // printBarcode
   // remove mustache - outside of the convert
+  // eslint
 });
