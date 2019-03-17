@@ -1,5 +1,5 @@
 const printer = require('node-thermal-printer');
-const convert = require('./utils/convert');
+const execute = require('./src/execute');
 printer.init({
   type: 'epson',
   interface: 'tcp://192.168.0.59',
@@ -12,24 +12,7 @@ const template = `
 me</p>
 `;
 
-function executePrinterCommands(commands) {
-  for(let i=0;i<commands.length;i++) {
-    const command = commands[i];
-    printer[command.name](command.data);
-  }
-
-  printer.cut();
-  printer.execute(function(err){
-    if (err) {
-      console.error("Print failed", err);
-    } else {
-      console.log("Print done");
-    }
-  });
-}
-
-const commands = convert(template);
-executePrinterCommands(commands);
+execute(printer, template);
 
 // printer.alignCenter();
 // printer.println("www.ollyfood.com.ua");

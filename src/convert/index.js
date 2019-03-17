@@ -162,8 +162,8 @@ const reduceSanitizeHtml = (sanitizers) => sanitizers.reduce((acc, val) => {
 module.exports = function(dirtyXml) {
   const sanitizerObject = reduceSanitizeHtml(handlersCollection.map(handler => handler.sanitizeHtml));
   const cleanXml = sanitizeHtml(dirtyXml, sanitizerObject);
-  const result = convert(cleanXml);
-  console.log('-----');
-  console.log(JSON.stringify(result, null, 2));
-  return result;
+  // const result = convert(cleanXml);
+  // console.log('-----');
+  // console.log(JSON.stringify(result, null, 2));
+  return convert(cleanXml);
 };

@@ -842,16 +842,16 @@ me</p>
 
   describe('image', function() {
     it('image simple', function() {
-      assert(_.isEqual(convert('<img src="./assets/olaii-logo-black.png" />'), [{name: 'printImage', data: './assets/olaii-logo-black.png'}]));
-      assert(_.isEqual(convert('<img src="./assets/olaii-logo-black.png"></img>'), [{name: 'printImage', data: './assets/olaii-logo-black.png'}]));
+      assert(_.isEqual(convert('<img src="./assets/olaii-logo-black.png" />'),
+        [{name: 'printImage', data: './assets/olaii-logo-black.png', isAwait: true}]));
+      assert(_.isEqual(convert('<img src="./assets/olaii-logo-black.png"></img>'),
+        [{name: 'printImage', data: './assets/olaii-logo-black.png', isAwait: true}]));
     });
   });
 
-  // image
-  // getWidth?? testWidth - что нет переносов
-  // pdf417
-  // maxiCode
-  // printBarcode
-  // remove mustache - outside of the convert
-  // eslint
+  // TODO getWidth?? testWidth - что нет переносов
+  // TODO pdf417
+  // TODO maxiCode
+  // TODO printBarcode
+  // TODO eslint
 });
