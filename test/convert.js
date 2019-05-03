@@ -1,9 +1,10 @@
+const fs = require('fs');
 const assert = require('assert');
 const _ = require('lodash');
 const convert = require('../src/convert');
 
-describe('convertTemplateToPrinterCommands', function () {
-  it('create print line commands', function () {
+describe('convertTemplateToPrinterCommands', async () => {
+  it('create print line commands', async () => {
     const template = `
 hello world
 it is
@@ -15,10 +16,10 @@ me
       {name: 'println', data: 'hello worldit ismeme'},
     ];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
 
-  it('understands multiple lines', function () {
+  it('understands multiple lines', async () => {
     const template = `
 <div>hello world</div>
 <p>it is</p>
@@ -35,11 +36,11 @@ me</p>
       {name: 'newLine'},
     ];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
 
 
-  it('has special treatment for simple table', function () {
+  it('has special treatment for simple table', async () => {
     const template = `
 <table>
 <tr><td>One</td><td>Two</td><td>Three</td></tr>
@@ -48,18 +49,18 @@ me</p>
 
     const exptectedResult = [{name: 'tableCustom', data: [{text: 'One'}, {text: 'Two'}, {text: 'Three'}]}];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
 
-  it('understands blank lines', function () {
-    assert(_.isEqual(convert(`<br/>`), [{name: 'newLine'}]));
-    assert(_.isEqual(convert(`<br/><br>`), [{name: 'newLine'}, {name: 'newLine'}]));
-    assert(_.isEqual(convert(`<p>ho-ho</p><br/><br><p>ha-ha</p>`),
+  it('understands blank lines', async () => {
+    assert(_.isEqual(await convert(`<br/>`), [{name: 'newLine'}]));
+    assert(_.isEqual(await convert(`<br/><br>`), [{name: 'newLine'}, {name: 'newLine'}]));
+    assert(_.isEqual(await convert(`<p>ho-ho</p><br/><br><p>ha-ha</p>`),
       [{name: 'print', data: 'ho-ho'}, {name: 'newLine'}, {name: 'newLine'}, {name: 'newLine'},
         {name: 'print', data: 'ha-ha'}, {name: 'newLine'}]));
   });
 
-  it('can make words bold (simple)', function () {
+  it('can make words bold (simple)', async () => {
     const template = `
 <p>Hello <b>OOOHHHHHOOOOO</b> and I am not bold</p>
 <p>Me tooo</p>
@@ -75,10 +76,10 @@ me</p>
       {name: 'newLine'},
     ];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
 
-  it('works with nested styling', function () {
+  it('works with nested styling', async () => {
     const template = `
 <p>Hello <fontb><b>OOO<fonta>HHHHH</fonta>OOOOO</b></fontb> and I am not bold</p>
 <p>Me tooo</p>
@@ -100,10 +101,10 @@ me</p>
       {name: 'newLine'},
     ];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
 
-  it('can make words bold (advanced)', function () {
+  it('can make words bold (advanced)', async () => {
     const template = `
 <p>Hello <b>OOOHHHHHOOOOO</b> and I am not bold</p>
 <p>Lets <b>da</b>ne<b>ce</b>!<b>!</b> and I am not bold</p>
@@ -134,10 +135,10 @@ me</p>
       {name: 'newLine'},
     ];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
 
-  it('has special treatment for table with attributes', function () {
+  it('has special treatment for table with attributes', async () => {
     const template = `
     <table>
         <tr>
@@ -158,10 +159,10 @@ me</p>
       },
     ];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
 
-  it('has special treatment for table cells boldness', function () {
+  it('has special treatment for table cells boldness', async () => {
     const template = `
     <table>
         <tr>
@@ -184,10 +185,10 @@ me</p>
       },
     ];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
 
-  it('has special treatment for style boldness', function () {
+  it('has special treatment for style boldness', async () => {
     const template = `
     <p style="font-weight: bold">dsdasdas</p>
     <div style="font-weight: bold" disabled>oneone</div>
@@ -204,41 +205,41 @@ me</p>
       {name: 'newLine'},
     ];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
 
-  it('openCashDrawer works', function () {
-    assert(_.isEqual(convert('<opencashdrawer/>'), [{name: 'openCashDrawer'}]));
-    assert(_.isEqual(convert('<opencashdrawer />'), [{name: 'openCashDrawer'}]));
-    assert(_.isEqual(convert('<p>1</p><opencashdrawer />'), [{
+  it('openCashDrawer works', async () => {
+    assert(_.isEqual(await convert('<opencashdrawer/>'), [{name: 'openCashDrawer'}]));
+    assert(_.isEqual(await convert('<opencashdrawer />'), [{name: 'openCashDrawer'}]));
+    assert(_.isEqual(await convert('<p>1</p><opencashdrawer />'), [{
       name: 'print',
       data: '1'
     }, {name: 'newLine'}, {name: 'openCashDrawer'}]));
   });
 
-  it('cut works', function () {
-    assert(_.isEqual(convert('<cut/>'), [{name: 'cut'}]));
-    assert(_.isEqual(convert('<cut />'), [{name: 'cut'}]));
-    assert(_.isEqual(convert('<p>1</p><cut />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'cut'}]));
+  it('cut works', async () => {
+    assert(_.isEqual(await convert('<cut/>'), [{name: 'cut'}]));
+    assert(_.isEqual(await convert('<cut />'), [{name: 'cut'}]));
+    assert(_.isEqual(await convert('<p>1</p><cut />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'cut'}]));
   });
 
-  it('partialCut works', function () {
-    assert(_.isEqual(convert('<partialcut/>'), [{name: 'partialCut'}]));
-    assert(_.isEqual(convert('<partialcut />'), [{name: 'partialCut'}]));
-    assert(_.isEqual(convert('<p>1</p><partialcut />'), [{
+  it('partialCut works', async () => {
+    assert(_.isEqual(await convert('<partialcut/>'), [{name: 'partialCut'}]));
+    assert(_.isEqual(await convert('<partialcut />'), [{name: 'partialCut'}]));
+    assert(_.isEqual(await convert('<p>1</p><partialcut />'), [{
       name: 'print',
       data: '1'
     }, {name: 'newLine'}, {name: 'partialCut'}]));
   });
 
-  it('beep works', function () {
-    assert(_.isEqual(convert('<beep/>'), [{name: 'beep'}]));
-    assert(_.isEqual(convert('<beep />'), [{name: 'beep'}]));
-    assert(_.isEqual(convert('<p>1</p><beep />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'beep'}]));
+  it('beep works', async () => {
+    assert(_.isEqual(await convert('<beep/>'), [{name: 'beep'}]));
+    assert(_.isEqual(await convert('<beep />'), [{name: 'beep'}]));
+    assert(_.isEqual(await convert('<p>1</p><beep />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'beep'}]));
   });
 
-  describe('rotate180', function () {
-    it('rotate180 makes upside down', function () {
+  describe('rotate180', async () => {
+    it('rotate180 makes upside down', async () => {
       const template = `
     <rotate180>
       <p>dsdasdas</p>
@@ -257,10 +258,10 @@ me</p>
         {name: 'upsideDown', data: false},
       ];
 
-      assert(_.isEqual(convert(template), exptectedResult));
+      assert(_.isEqual(await convert(template), exptectedResult));
     });
 
-    it('rotate180 makes upside down inside text', function () {
+    it('rotate180 makes upside down inside text', async () => {
       const template = `
       <p>dsd <rotate180><b>RRR</b></rotate180> asdas</p>
       <div style="font-weight: bold" disabled>oneone</div>
@@ -281,12 +282,12 @@ me</p>
         {name: 'newLine'},
       ];
 
-      assert(_.isEqual(convert(template), exptectedResult));
+      assert(_.isEqual(await convert(template), exptectedResult));
     });
   });
 
-  describe('invert', function () {
-    it('invert tag works', function () {
+  describe('invert', async () => {
+    it('invert tag works', async () => {
       const template = `
     <invert>
       <p>dsdasdas</p>
@@ -305,10 +306,10 @@ me</p>
         {name: 'invert', data: false},
       ];
 
-      assert(_.isEqual(convert(template), exptectedResult));
+      assert(_.isEqual(await convert(template), exptectedResult));
     });
 
-    it('invert tag works inside text', function () {
+    it('invert tag works inside text', async () => {
       const template = `
       <p>dsd <invert><b>RRR</b></invert> asdas</p>
       <div style="font-weight: bold" disabled>oneone</div>
@@ -329,12 +330,12 @@ me</p>
         {name: 'newLine'},
       ];
 
-      assert(_.isEqual(convert(template), exptectedResult));
+      assert(_.isEqual(await convert(template), exptectedResult));
     });
   });
 
-  describe('u', function() {
-    it('u tag works', function() {
+  describe('u', async () => {
+    it('u tag works', async () => {
       const template = `
     <u>
       <p>dsdasdas</p>
@@ -353,10 +354,10 @@ me</p>
         {name: 'underline', data: false},
       ];
 
-      assert(_.isEqual(convert(template), exptectedResult));
+      assert(_.isEqual(await convert(template), exptectedResult));
     });
 
-    it('u tag works inside text', function() {
+    it('u tag works inside text', async () => {
       const template = `
       <p>dsd <u><b>RRR</b></u> asdas</p>
       <div style="font-weight: bold" disabled>oneone</div>
@@ -377,12 +378,12 @@ me</p>
         {name: 'newLine'}
       ];
 
-      assert(_.isEqual(convert(template), exptectedResult));
+      assert(_.isEqual(await convert(template), exptectedResult));
     });
   });
 
-  describe('ud', function() {
-      it('ud tag works', function() {
+  describe('ud', async () => {
+      it('ud tag works', async () => {
     const template = `
     <ud>
       <p>dsdasdas</p>
@@ -401,10 +402,10 @@ me</p>
       {name: 'underlineThick', data: false},
     ];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
 
-  it('ud tag works inside text', function() {
+  it('ud tag works inside text', async () => {
     const template = `
       <p>dsd <ud><b>RRR</b></ud> asdas</p>
       <div style="font-weight: bold" disabled>oneone</div>
@@ -425,19 +426,19 @@ me</p>
       {name: 'newLine'}
     ];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
   });
 
 
-  it('hr tag works', function() {
-    assert(_.isEqual(convert('<hr/>'), [{name: 'drawLine'}]));
-    assert(_.isEqual(convert('<hr />'), [{name: 'drawLine'}]));
-    assert(_.isEqual(convert('<p>1</p><hr />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'drawLine'}]));
+  it('hr tag works', async () => {
+    assert(_.isEqual(await convert('<hr/>'), [{name: 'drawLine'}]));
+    assert(_.isEqual(await convert('<hr />'), [{name: 'drawLine'}]));
+    assert(_.isEqual(await convert('<p>1</p><hr />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'drawLine'}]));
   });
 
-  describe('center tag', function() {
-    it('center tag works', function() {
+  describe('center tag', async () => {
+    it('center tag works', async () => {
       const template = `
     <center>
       <p>dsdasdas</p>
@@ -456,10 +457,10 @@ me</p>
         {name: 'alignLeft'},
       ];
 
-      assert(_.isEqual(convert(template), exptectedResult));
+      assert(_.isEqual(await convert(template), exptectedResult));
     });
 
-    it('center tag works inside text', function() {
+    it('center tag works inside text', async () => {
       const template = `
       <p>dsd <center><b>RRR</b></center> asdas</p>
       <div style="font-weight: bold" disabled>oneone</div>
@@ -480,12 +481,12 @@ me</p>
         {name: 'newLine'},
       ];
 
-      assert(_.isEqual(convert(template), exptectedResult));
+      assert(_.isEqual(await convert(template), exptectedResult));
     });
   });
 
-  describe('left tag', function() {
-    it('left tag works', function() {
+  describe('left tag', async () => {
+    it('left tag works', async () => {
       const template = `
     <left>
       <p>dsdasdas</p>
@@ -504,10 +505,10 @@ me</p>
         {name: 'alignLeft'},
       ];
 
-      assert(_.isEqual(convert(template), exptectedResult));
+      assert(_.isEqual(await convert(template), exptectedResult));
     });
 
-    it('left tag works inside text', function() {
+    it('left tag works inside text', async () => {
       const template = `
       <p>dsd <left><b>RRR</b></left> asdas</p>
       <div style="font-weight: bold" disabled>oneone</div>
@@ -528,12 +529,12 @@ me</p>
         {name: 'newLine'},
       ];
 
-      assert(_.isEqual(convert(template), exptectedResult));
+      assert(_.isEqual(await convert(template), exptectedResult));
     });
   });
 
-  describe('right tag', function() {
-    it('right tag works', function() {
+  describe('right tag', async () => {
+    it('right tag works', async () => {
       const template = `
     <right>
       <p>dsdasdas</p>
@@ -552,10 +553,10 @@ me</p>
         {name: 'alignLeft'},
       ];
 
-      assert(_.isEqual(convert(template), exptectedResult));
+      assert(_.isEqual(await convert(template), exptectedResult));
     });
 
-    it('right tag works inside text', function() {
+    it('right tag works inside text', async () => {
       const template = `
       <p>dsd <right><b>RRR</b></right> asdas</p>
       <div style="font-weight: bold" disabled>oneone</div>
@@ -576,11 +577,11 @@ me</p>
         {name: 'newLine'},
       ];
 
-      assert(_.isEqual(convert(template), exptectedResult));
+      assert(_.isEqual(await convert(template), exptectedResult));
     });
   });
 
-  it('doubleheight tag', function () {
+  it('doubleheight tag', async () => {
     const template = `
     <doubleheight>
       <p style="font-weight: bold">dsdasdas</p>
@@ -607,10 +608,10 @@ me</p>
       {name: "newLine"},
     ];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
 
-  it('doublewidth tag', function () {
+  it('doublewidth tag', async () => {
     const template = `
     <doublewidth>
       <p style="font-weight: bold">dsdasdas</p>
@@ -637,10 +638,10 @@ me</p>
       {name: "newLine"},
     ];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
 
-  it('quadarea tag', function () {
+  it('quadarea tag', async () => {
     const template = `
     <quadarea>
       <p style="font-weight: bold">dsdasdas</p>
@@ -667,10 +668,10 @@ me</p>
       {name: "newLine"},
     ];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
 
-  it('normal tag', function () {
+  it('normal tag', async () => {
     const template = `
     <normal>
       <p style="font-weight: bold">dsdasdas</p>
@@ -697,10 +698,10 @@ me</p>
       {name: "newLine"},
     ];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
 
-  it('normal/doubleheight/doublewidth/quadarea tags', function () {
+  it('normal/doubleheight/doublewidth/quadarea tags', async () => {
     const template = `
     <p><doubleheight>12<doublewidth>34<normal>7</normal>8</doublewidth>9</doubleheight>0</p>
     <quadarea>777</quadarea>
@@ -725,127 +726,140 @@ me</p>
       {name: "setTextNormal"},
     ];
 
-    assert(_.isEqual(convert(template), exptectedResult));
+    assert(_.isEqual(await convert(template), exptectedResult));
   });
 
-  describe('code128', function() {
-    it('code128 simple', function() {
-      assert(_.isEqual(convert('<code128 data="xxxyyy" />'), [{name: 'code128', data: 'xxxyyy'}]));
-      assert(_.isEqual(convert('<code128 data="123"></code128>'), [{name: 'code128', data: '123'}]));
+  describe('code128', async () => {
+    it('code128 simple', async () => {
+      assert(_.isEqual(await convert('<code128 data="xxxyyy" />'), [{name: 'code128', data: 'xxxyyy'}]));
+      assert(_.isEqual(await convert('<code128 data="123"></code128>'), [{name: 'code128', data: '123'}]));
     });
 
-    it('code128 attributes', function() {
-      assert(_.isEqual(convert('<code128 data="xxxyyy" width="SMALL" height="50" />'),
+    it('code128 attributes', async () => {
+      assert(_.isEqual(await convert('<code128 data="xxxyyy" width="SMALL" height="50" />'),
         [{name: 'code128', data: 'xxxyyy', width: 'SMALL', height: 50}]));
     });
 
-    it('code128 width is one of: SMALL/MEDIUM/LARGE', function() {
-      assert(_.isEqual(convert('<code128 data="xxxyyy" width="15" />'), [{name: 'code128', data: 'xxxyyy'}]));
-      assert(_.isEqual(convert('<code128 data="xxxyyy" width="XX" />'), [{name: 'code128', data: 'xxxyyy'}]));
-      assert(_.isEqual(convert('<code128 data="xxxyyy" width="large" />'),
+    it('code128 width is one of: SMALL/MEDIUM/LARGE', async () => {
+      assert(_.isEqual(await convert('<code128 data="xxxyyy" width="15" />'), [{name: 'code128', data: 'xxxyyy'}]));
+      assert(_.isEqual(await convert('<code128 data="xxxyyy" width="XX" />'), [{name: 'code128', data: 'xxxyyy'}]));
+      assert(_.isEqual(await convert('<code128 data="xxxyyy" width="large" />'),
         [{name: 'code128', data: 'xxxyyy', width: 'LARGE'}]));
-      assert(_.isEqual(convert('<code128 data="xxxyyy" width="MediuM" />'),
+      assert(_.isEqual(await convert('<code128 data="xxxyyy" width="MediuM" />'),
         [{name: 'code128', data: 'xxxyyy', width: 'MEDIUM'}]));
     });
 
-    it('code128 has height between 50 and 80', function() {
-      assert(_.isEqual(convert('<code128 data="xxxyyy" height="49" />'), [{name: 'code128', data: 'xxxyyy', height: 50}]));
-      assert(_.isEqual(convert('<code128 data="xxxyyy" height="62" />'), [{name: 'code128', data: 'xxxyyy', height: 62}]));
-      assert(_.isEqual(convert('<code128 data="xxxyyy" height="81" />'), [{name: 'code128', data: 'xxxyyy', height: 80}]));
+    it('code128 has height between 50 and 80', async () => {
+      assert(_.isEqual(await convert('<code128 data="xxxyyy" height="49" />'), [{name: 'code128', data: 'xxxyyy', height: 50}]));
+      assert(_.isEqual(await convert('<code128 data="xxxyyy" height="62" />'), [{name: 'code128', data: 'xxxyyy', height: 62}]));
+      assert(_.isEqual(await convert('<code128 data="xxxyyy" height="81" />'), [{name: 'code128', data: 'xxxyyy', height: 80}]));
     });
 
-    it('code128 supports attr text-no', function() {
-      assert(_.isEqual(convert('<code128 data="xxxyyy" text-no />'), [{name: 'code128', data: 'xxxyyy', text: 1}]));
+    it('code128 supports attr text-no', async () => {
+      assert(_.isEqual(await convert('<code128 data="xxxyyy" text-no />'), [{name: 'code128', data: 'xxxyyy', text: 1}]));
     });
 
-    it('code128 supports attr text-bottom', function() {
-      assert(_.isEqual(convert('<code128 data="xxxyyy" text-bottom />'), [{name: 'code128', data: 'xxxyyy', text: 2}]));
+    it('code128 supports attr text-bottom', async () => {
+      assert(_.isEqual(await convert('<code128 data="xxxyyy" text-bottom />'), [{name: 'code128', data: 'xxxyyy', text: 2}]));
     });
 
-    it('code128 supports attr text-no-inline', function() {
-      assert(_.isEqual(convert('<code128 data="xxxyyy" text-no-inline />'), [{name: 'code128', data: 'xxxyyy', text: 3}]));
+    it('code128 supports attr text-no-inline', async () => {
+      assert(_.isEqual(await convert('<code128 data="xxxyyy" text-no-inline />'), [{name: 'code128', data: 'xxxyyy', text: 3}]));
     });
 
-    it('code128 supports attr text-bottom-inline', function() {
-      assert(_.isEqual(convert('<code128 data="xxxyyy" text-bottom-inline />'), [{name: 'code128', data: 'xxxyyy', text: 4}]));
+    it('code128 supports attr text-bottom-inline', async () => {
+      assert(_.isEqual(await convert('<code128 data="xxxyyy" text-bottom-inline />'), [{name: 'code128', data: 'xxxyyy', text: 4}]));
     });
   });
 
-  describe('qrcode', function() {
-    it('qrcode simple', function() {
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" />'), [{name: 'printQR', data: 'xxxyyy'}]));
-      assert(_.isEqual(convert('<qrcode data="123"></qrcode>'), [{name: 'printQR', data: '123'}]));
+  describe('qrcode', async () => {
+    it('qrcode simple', async () => {
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" />'), [{name: 'printQR', data: 'xxxyyy'}]));
+      assert(_.isEqual(await convert('<qrcode data="123"></qrcode>'), [{name: 'printQR', data: '123'}]));
     });
 
-    it('qrcode attributes', function() {
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" cellSize="3" correction="M" model="standard" />'),
+    it('qrcode attributes', async () => {
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" cellSize="3" correction="M" model="standard" />'),
         [{name: 'printQR', data: 'xxxyyy', cellSize: 3, correction: 'M', model: 2}]));
     });
 
-    it('qrcode cellsize', function() {
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" cellSize="1" />'),
+    it('qrcode cellsize', async () => {
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" cellSize="1" />'),
         [{name: 'printQR', data: 'xxxyyy', cellSize: 1}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" cellSize="8" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" cellSize="8" />'),
         [{name: 'printQR', data: 'xxxyyy', cellSize: 8}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" cellSize="5.3123" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" cellSize="5.3123" />'),
         [{name: 'printQR', data: 'xxxyyy', cellSize: 5}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" cellSize="9" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" cellSize="9" />'),
         [{name: 'printQR', data: 'xxxyyy'}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" cellSize="a" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" cellSize="a" />'),
         [{name: 'printQR', data: 'xxxyyy'}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" />'),
         [{name: 'printQR', data: 'xxxyyy'}]));
     });
 
-    it('qrcode correction', function() {
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" correction="L" />'),
+    it('qrcode correction', async () => {
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" correction="L" />'),
         [{name: 'printQR', data: 'xxxyyy', correction: 'L'}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" correction="M" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" correction="M" />'),
         [{name: 'printQR', data: 'xxxyyy', correction: 'M'}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" correction="Q" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" correction="Q" />'),
         [{name: 'printQR', data: 'xxxyyy', correction: 'Q'}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" correction="H" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" correction="H" />'),
         [{name: 'printQR', data: 'xxxyyy', correction: 'H'}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" correction="D" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" correction="D" />'),
         [{name: 'printQR', data: 'xxxyyy'}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" correction="A" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" correction="A" />'),
         [{name: 'printQR', data: 'xxxyyy'}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" />'),
         [{name: 'printQR', data: 'xxxyyy'}]));
     });
 
-    it('qrcode model', function() {
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" model="1" />'),
+    it('qrcode model', async () => {
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" model="1" />'),
         [{name: 'printQR', data: 'xxxyyy', model: 1}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" model="2" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" model="2" />'),
         [{name: 'printQR', data: 'xxxyyy', model: 2}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" model="3" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" model="3" />'),
         [{name: 'printQR', data: 'xxxyyy', model: 3}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" model="3.5" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" model="3.5" />'),
         [{name: 'printQR', data: 'xxxyyy', model: 3}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" model="4" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" model="4" />'),
         [{name: 'printQR', data: 'xxxyyy'}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" model="big" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" model="big" />'),
         [{name: 'printQR', data: 'xxxyyy', model: 1}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" model="BiG" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" model="BiG" />'),
         [{name: 'printQR', data: 'xxxyyy', model: 1}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" model="standard" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" model="standard" />'),
         [{name: 'printQR', data: 'xxxyyy', model: 2}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" model="micro" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" model="micro" />'),
         [{name: 'printQR', data: 'xxxyyy', model: 3}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" model="JVHUFDSP9UIO" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" model="JVHUFDSP9UIO" />'),
         [{name: 'printQR', data: 'xxxyyy'}]));
-      assert(_.isEqual(convert('<qrcode data="xxxyyy" />'),
+      assert(_.isEqual(await convert('<qrcode data="xxxyyy" />'),
         [{name: 'printQR', data: 'xxxyyy'}]));
     });
   });
 
-  describe('image', function() {
-    it('image simple', function() {
-      assert(_.isEqual(convert('<img src="./assets/olaii-logo-black.png" />'),
+  describe('image', async () => {
+    it('image simple', async () => {
+      assert(_.isEqual(await convert('<img src="./assets/olaii-logo-black.png" />'),
         [{name: 'printImage', data: './assets/olaii-logo-black.png', isAwait: true}]));
-      assert(_.isEqual(convert('<img src="./assets/olaii-logo-black.png"></img>'),
+      assert(_.isEqual(await convert('<img src="./assets/olaii-logo-black.png"></img>'),
         [{name: 'printImage', data: './assets/olaii-logo-black.png', isAwait: true}]));
+    });
+
+    it('image base64', async () => {
+      const val = await convert('<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAZlBMVEUAAAD///+lpaWXl5cXFxfu7u6SkpL4+Pjh4eH7+/toaGgpKSnU1NSCgoKxsbE8PDxvb29TU1O5ubleXl6dnZ3ExMRKSkrR0dENDQ2pqalBQUF7e3saGhrn5+eNjY3d3d0gICA1NTVyXv3hAAAEn0lEQVR4nO3d6ZaiMBAF4LC0kUVQUKe36el+/5cce1NRlgBJpYpz798+xvoOsiQNlAr6ovMiqsssVjwTZ2UdFbnuNajuP63D1DfBMGm4Hi9Mqp3vukdlVyWjhEnku+IJidqNbUK9913sxOzb9sgW4SHzXenkZAcDod76LnNWtneb8VaYcz0zmCbO+4Wh7wItJOwTbnxXZyWbbqGUM/xQ0i7h0Xdl1nJsFy5lC34mbRMuYx/8zeZeuISj6HXCW2HuuyLryZtCLf1Ef59YN4SyL9Xas70WHnxX4ySHi1DLnU30JdNnodT54FD2Z6HvSpzlVyhxycIs0bcw8V2HwyRfwsp3GQ5TfQllLRuOy+5TuPZdhdOsT8KlXXI3E56ES5oW3icNlPZdg+NotbxpUzO5KnyX4DiFWu4FzXciVfsuwXFqVfouwXFKtcyp4SWZWt4CTTNL9yGIm7w/vxSH/G//XTJyl16e3wZuABIufPtrphMqzIqum36WIXwvxvAECiPDvU+qsByx/4kUrsb7RAnjP1OAgoTZhF+oKOFx9CFGmDAdpsgW7iYDhQiPo65iBAo/ZgBlCCceReUIW25ZXpYwmgUUIJxxGBUi7HnMZRnC/Uwge+HHXCB74bT5hCBhPRvIXXj72MfihNv5QOZCC5uQt/DZApC3sFq80AaQtXAzXL5w4fyzPXPh+5yZvQihnR8pZ+G8qb0E4azVGQlCK6d71kLDa1J92K/6wviOQ7MLGsGvPTA7Gz75rnJOTA40sp+lM9mEj76LnJNs6b9Ro4VgwUcZZfQvUeFP8bwMC2UfZ9TbsFD4AxIGq/mML1dMEkIIIftACCH/QAgh/0AIIf9AeMrKd43DeXyLurIyWEw8rDo/fonf9yK9Tr07fUy8CuMHCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIRQj/PfQGYN/8evuT1+N41Wo4s6op2Hhvufz57z6FfYEdwxByD8QQsg/EELIPxBCyD8QQsg/EELIPxBCyD8QQsg/EELIPxBCyD8QQsg/EELIPxBCyD8QQsg/EELIPxDaF8Z2hxsMtTBW1O8/pxZmqrQ5nEGohaWqbQ5nEGphragPXNTCSFG/4p1aWKjc5nAGoRbmivq5BWqhVkFqc7zhEAvTQAWhxfEMQiwMT0LijiDEwvVJGOwsDjgcWuEu+BRW9gY0CK2w+hIm9gY0CK0w+RLSzsdIhVHwLSR9WJFUGPwKKd+rTCncn4WacJJIKMz0WUjZQ4pQ+N3w9KeV3dbSoMOhE/40y/wRarLlGjJhrBvCgGwSRSb87VB/brhIdQFOJTx/z6Wl5MbGuCO+2a3w0jj6qmkmzUSRRnjVZfG6Lehx/sjDIREer0ZrND6l2IoUwkafzGZrV4J9kUDYbN5+07zW/RHVvfDmG27b8+auT/2uhXF+M9pdA2Lt+ALOsXB793aYlhbLbpt+OxVmh/vR2ppIa5fzRZfCfdvrfdrbZCfuFjbcCaOkdbSuRuBJ5WiR0ZFwV7X7uoWnrEMXVwAuhGm47h6tv5m7zouoLjObZxCbwjgr66jI+1+u9R8Qp0DSoVF68gAAAABJRU5ErkJggg==" />');
+      assert.equal(val[0].name, 'printImage');
+      assert.equal(val[0].isAwait, true);
+      fs.readFile(val[0].data, function(err, data) {
+        if(err || !data) {
+          assert.fail();
+        } else {
+          assert.ok(data);
+        }
+      })
     });
   });
 

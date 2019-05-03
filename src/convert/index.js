@@ -70,7 +70,7 @@ const handlersCollection = [
   notagHandler,
 ];
 
-const process = (context, node, depth) => {
+const process = async (context, node, depth) => {
   const nodeGroup = {
     node,
     tag: getTag(node),
@@ -94,7 +94,7 @@ const process = (context, node, depth) => {
     const {before, stackName: handlerStackName, isWithoutClosingTag} = handlers[i];
     const stackName = [null, undefined].includes(handlerStackName) ? nodeGroup.tag : handlerStackName;
     if(before && (!context.stack[stackName] || isWithoutClosingTag)) {
-      const result = before(context, nodeGroup, depth);
+      const result = await before(context, nodeGroup, depth);
       context = result === null ? context : result;
     }
     context.stack[stackName] = context.stack[stackName] ? context.stack[stackName] + 1 : 1;
@@ -111,14 +111,14 @@ const process = (context, node, depth) => {
   } else {
     for(let i=0; i<nodeGroup.innerNodes.length; i++) {
       const innerNode = nodeGroup.innerNodes[i];
-      context = process(context, innerNode, depth+1);
+      context = await process(context, innerNode, depth+1);
     }
   }
   for(let i=0; i<handlers.length; i++) {
     const {after, stackName: handlerStackName, isWithoutClosingTag} = handlers[i];
     const stackName = [null, undefined].includes(handlerStackName) ? nodeGroup.tag : handlerStackName;
     if(after && (context.stack[stackName] || isWithoutClosingTag)) {
-      const result = after(context, nodeGroup, depth);
+      const result = await after(context, nodeGroup, depth);
       context = result === null ? context : result;
     }
     context.stack[stackName] = context.stack[stackName] - 1;
@@ -126,13 +126,13 @@ const process = (context, node, depth) => {
   return context;
 };
 
-const convert = (xml) => {
+const convert = async (xml) => {
   const root = parseXml(`<?xml version="1.0" encoding="UTF-8"?><root>${xml.replace(/\n/g, '')}</root>`, {noblanks: true}).root();
   const nodes = root.childNodes();
   let context = {data: [], commands: [], stack: {}};
   for(let i=0; i<nodes.length; i++) {
     const node = nodes[i];
-    process(context, node, 0);
+    await process(context, node, 0);
   }
 
   return context.commands;
@@ -162,6 +162,7 @@ const reduceSanitizeHtml = (sanitizers) => sanitizers.reduce((acc, val) => {
 module.exports = function(dirtyXml) {
   const sanitizerObject = reduceSanitizeHtml(handlersCollection.map(handler => handler.sanitizeHtml));
   const cleanXml = sanitizeHtml(dirtyXml, sanitizerObject);
+  // const cleanXml = dirtyXml;
   // const result = convert(cleanXml);
   // console.log('-----');
   // console.log(JSON.stringify(result, null, 2));
