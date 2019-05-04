@@ -861,6 +861,19 @@ me</p>
         }
       })
     });
+
+    it('image http', async () => {
+      const val = await convert('<img src="https://dummyimage.com/600x400/fff/000" />');
+      assert.equal(val[0].name, 'printImage');
+      assert.equal(val[0].isAwait, true);
+      fs.readFile(val[0].data, function(err, data) {
+        if(err || !data) {
+          assert.fail();
+        } else {
+          assert.ok(data);
+        }
+      })
+    });
   });
 
   // TODO getWidth?? testWidth - что нет переносов

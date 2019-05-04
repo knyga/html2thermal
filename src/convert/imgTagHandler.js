@@ -1,7 +1,6 @@
 const fs = require('fs');
 const temp = require('temp');
-const _ = require('lodash');
-const base64Img = require('base64-img');
+const download = require('download');
 
 module.exports = {
   isWithoutClosingTag: true,
@@ -11,16 +10,42 @@ module.exports = {
     return new Promise((resolve) => {
       const src = attrs.src.toString();
       if(/^data:image\/.+;base64,/.test(src)) {
-        temp.open('printerimg', function(err, info) {
+        // TODO unify temp dir creation
+        temp.open('printerimg', (err, info) => {
           if(err) {
             resolve(context);
           } else {
             const base64Image = src.split(';base64,').pop();
-            fs.writeFile(info.path, base64Image, {encoding: 'base64'}, function(err) {
+            const path = info.path;
+            fs.writeFile(path, base64Image, {encoding: 'base64'}, (err) => {
               if(err) {
                 resolve(context);
               } else {
-                context.commands.push({name: 'printImage', data: info.path, isAwait: true });
+                context.commands.push({name: 'printImage', data: path, isAwait: true });
+                resolve(context);
+              }
+            });
+          }
+        });
+      } else if(/^https?:\/\/.+/.test(src)) {
+        temp.open('printerimg', (err, info) => {
+          if(err) {
+            resolve(context);
+          } else {
+            const path = info.path;
+            let data = null;
+
+            try {
+              data = download(src);
+            } catch(e) {
+              resolve(context);
+            }
+
+            fs.writeFile(path, data, (err) => {
+              if(err) {
+                resolve(context);
+              } else {
+                context.commands.push({name: 'printImage', data: path, isAwait: true });
                 resolve(context);
               }
             });
@@ -37,6 +62,6 @@ module.exports = {
     allowedAttributes: {
       img: ['src'],
     },
-    allowedSchemes: [ 'data', 'http' ],
+    allowedSchemes: [ 'data', 'http', 'https' ],
   },
 };
