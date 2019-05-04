@@ -844,10 +844,16 @@ me</p>
 
   describe('image', async () => {
     it('image simple', async () => {
-      assert(_.isEqual(await convert('<img src="./assets/olaii-logo-black.png" />'),
-        [{name: 'printImage', data: './assets/olaii-logo-black.png', isAwait: true}]));
-      assert(_.isEqual(await convert('<img src="./assets/olaii-logo-black.png"></img>'),
-        [{name: 'printImage', data: './assets/olaii-logo-black.png', isAwait: true}]));
+      const val = await convert(`<img src="${__dirname}/assets/yo.png" />`);
+      assert.equal(val[0].name, 'printImage');
+      assert.equal(val[0].isAwait, true);
+      fs.readFile(val[0].data, function(err, data) {
+        if(err || !data) {
+          assert.fail();
+        } else {
+          assert.ok(data);
+        }
+      });
     });
 
     it('image base64', async () => {
@@ -860,7 +866,7 @@ me</p>
         } else {
           assert.ok(data);
         }
-      })
+      });
     });
 
     it('image http', async () => {
@@ -880,7 +886,6 @@ me</p>
       const val = await convert('<img src="https://dummyimage.com/600x400/fff/000" width="200" />');
       assert.equal(val[0].name, 'printImage');
       assert.equal(val[0].isAwait, true);
-      console.log(val[0].data);
       getImageSize(fs.createReadStream(val[0].data), (err, size) => {
         if (err !== null) {
           console.log(err);
