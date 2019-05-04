@@ -1,6 +1,7 @@
 const fs = require('fs');
 const assert = require('assert');
 const _ = require('lodash');
+const getImageSize = require('probe-image-size');
 const convert = require('../src/convert');
 
 describe('convertTemplateToPrinterCommands', async () => {
@@ -872,7 +873,35 @@ me</p>
         } else {
           assert.ok(data);
         }
-      })
+      });
+    });
+
+    it('image width resizes image', async () => {
+      const val = await convert('<img src="https://dummyimage.com/600x400/fff/000" width="200" />');
+      assert.equal(val[0].name, 'printImage');
+      assert.equal(val[0].isAwait, true);
+      console.log(val[0].data);
+      getImageSize(fs.createReadStream(val[0].data), (err, size) => {
+        if (err !== null) {
+          console.log(err);
+          assert.fail();
+        }
+
+        assert.equal(size.width, 200);
+      });
+    });
+
+    it('image height resizes image', async () => {
+      const val = await convert('<img src="https://dummyimage.com/600x400/fff/000" height="200" />');
+      assert.equal(val[0].name, 'printImage');
+      assert.equal(val[0].isAwait, true);
+      getImageSize(fs.createReadStream(val[0].data), (err, size) => {
+        if (err !== null) {
+          assert.fail();
+        }
+
+        assert.equal(size.height, 200);
+      });
     });
   });
 
