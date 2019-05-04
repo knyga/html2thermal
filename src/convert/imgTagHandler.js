@@ -3,6 +3,8 @@ const temp = require('temp');
 const download = require('download');
 const sharp = require('sharp');
 
+// TODO add cache for input path - output path
+
 const getImage = (attrs) => new Promise((resolve, reject) => {
   const src = attrs.src.toString();
   if(/^data:image\/.+;base64,/.test(src)) {
