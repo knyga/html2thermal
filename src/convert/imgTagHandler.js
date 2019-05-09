@@ -84,7 +84,6 @@ module.exports = {
 
             try {
               await img
-                .grayscale()
                 .png()
                 .toFile(path);
               context.commands.push({name: 'printImage', data: path, isAwait: true});
