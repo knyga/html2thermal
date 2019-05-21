@@ -47,12 +47,12 @@ const getImage = (attrs) => new Promise((resolve, reject) => {
         });
       }
     });
-  } else if (/^file:\/\/.+/.test(src)) {
+  } else {
     temp.open('printerimg', (err, info) => {
       if (err) {
         resolve(context);
       } else {
-        fs.copyFile(src.slice(7), info.path, (err) => {
+        fs.copyFile(/^file:\/\/.+/.test(src) ? src.slice(7) : src, info.path, (err) => {
           if(err) {
             reject();
           } else {
@@ -61,8 +61,6 @@ const getImage = (attrs) => new Promise((resolve, reject) => {
         });
       }
     });
-  } else {
-    reject();
   }
 });
 
