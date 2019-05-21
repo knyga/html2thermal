@@ -165,12 +165,11 @@ const reduceSanitizeHtml = (sanitizers) => sanitizers.reduce((acc, val) => {
   };
 }, {});
 
-const collabsSpaces = (html) => html.replace(/(<(pre|script|style|textarea|p|div|span)[^]+?<\/\2)|(^|>)\s+|\s+(?=<|$)/g, "$1$3")
+const collabsSpaces = (html) => html.replace(/(<(pre|script|style|textarea|p|div|span)[^]+?<\/\2)|(^|>)\s+|\s+(?=<|$)/g, "$1$3");
 
 module.exports = function(dirtyXml) {
   const sanitizerObject = reduceSanitizeHtml(handlersCollection.map(handler => handler.sanitizeHtml));
   const cleanXml = collabsSpaces(sanitizeHtml(dirtyXml, sanitizerObject));
-  console.log(cleanXml);
   // const cleanXml = dirtyXml;
   // const result = convert(cleanXml);
   // console.log('-----');
