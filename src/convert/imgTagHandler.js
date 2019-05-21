@@ -47,8 +47,22 @@ const getImage = (attrs) => new Promise((resolve, reject) => {
         });
       }
     });
+  } else if (/^file:\/\/.+/.test(src)) {
+    temp.open('printerimg', (err, info) => {
+      if (err) {
+        resolve(context);
+      } else {
+        fs.copyFile(src.slice(7), info.path, (err) => {
+          if(err) {
+            reject();
+          } else {
+            resolve(info.path);
+          }
+        });
+      }
+    });
   } else {
-    resolve(src);
+    reject();
   }
 });
 
@@ -108,6 +122,6 @@ module.exports = {
     allowedAttributes: {
       img: ['src', 'width', 'height'],
     },
-    allowedSchemes: ['data', 'http', 'https'],
+    allowedSchemes: ['data', 'http', 'https', 'file'],
   },
 };

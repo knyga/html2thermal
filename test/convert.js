@@ -852,7 +852,7 @@ me</p>
 
   describe('image', async () => {
     it('image simple', async () => {
-      const val = await convert(`<img src="${__dirname}/assets/yo.png" />`);
+      const val = await convert(`<img src="file://${__dirname}/assets/yo.png" />`);
       assert.strictEqual(val[0].name, 'printImage');
       assert.strictEqual(val[0].isAwait, true);
       fs.readFile(val[0].data, function(err, data) {
