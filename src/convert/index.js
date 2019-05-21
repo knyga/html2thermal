@@ -1,5 +1,5 @@
 const sanitizeHtml = require('sanitize-html');
-const {parseXml} = require('libxmljs');
+const cheerio = require('cheerio');
 const getTag = require('../utils/getTag');
 const checkIsNestedTagsPresent = require('../utils/checkIsNestedTagsPresent');
 const checkIsStyleBold = require('../utils/checkIsStyleBold');
@@ -74,7 +74,7 @@ const process = async (context, node, depth) => {
   const nodeGroup = {
     node,
     tag: getTag(node),
-    innerNodes: node.childNodes(),
+    innerNodes: node.children || [],
     isHasNestedTagsPresent: checkIsNestedTagsPresent(node),
     attrs: getAttrs(node),
   };
@@ -127,8 +127,12 @@ const process = async (context, node, depth) => {
 };
 
 const convert = async (xml) => {
-  const root = parseXml(`<?xml version="1.0" encoding="UTF-8"?><root>${xml.replace(/\n/g, '')}</root>`, {noblanks: true}).root();
-  const nodes = root.childNodes();
+  const wrappedXml = `<root>${xml.replace(/\n/g, '').trim()}`;
+  const root = cheerio.load(wrappedXml, {
+    normalizeWhitespace: true,
+    xmlMode: true,
+  }).root()[0].children[0];
+  const nodes = root.children;
   let context = {data: [], commands: [], stack: {}};
   for(let i=0; i<nodes.length; i++) {
     const node = nodes[i];

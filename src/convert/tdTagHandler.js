@@ -15,7 +15,7 @@ const tdTagHandler = {
       attrs.bold = true;
       delete attrs.style;
     }
-    context.data.push({...attrs, text: node.text()});
+    context.data.push({...attrs, text: node.children[0].data});
     return context;
   },
   sanitizeHtml: {

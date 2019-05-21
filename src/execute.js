@@ -17,11 +17,5 @@ module.exports = async (printer, html, isCut = true) => {
     printer.cut();
   }
 
-  return new Promise((resolve, reject) => printer.execute((err) => {
-    if(err) {
-      reject(err);
-    } else {
-      resolve();
-    }
-  }));
+  return printer.execute();
 };
