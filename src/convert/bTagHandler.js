@@ -1,4 +1,5 @@
 module.exports = {
+  name: 'bTagHandler',
   stackName: 'bold',
   checkIsAllowed: (context, {tag}) => tag === 'b',
   before: (context) => {

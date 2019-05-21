@@ -536,11 +536,10 @@ me</p>
   describe('right tag', async () => {
     it('right tag works', async () => {
       const template = `
-    <right>
-      <p>dsdasdas</p>
-      <div style="font-weight: bold" disabled>oneone</div>
-    </right>
-`;
+        <right>
+            <p>dsdasdas</p>
+            <div style="font-weight: bold" disabled>oneone</div>
+        </right>`;
 
       const exptectedResult = [
         {name: 'alignRight'},
@@ -558,8 +557,8 @@ me</p>
 
     it('right tag works inside text', async () => {
       const template = `
-      <p>dsd <right><b>RRR</b></right> asdas</p>
-      <div style="font-weight: bold" disabled>oneone</div>
+        <p>dsd <right><b>RRR</b></right> asdas</p>
+        <div style="font-weight: bold" disabled>oneone</div>
 `;
 
       const exptectedResult = [
@@ -576,7 +575,6 @@ me</p>
         {name: 'bold', data: false},
         {name: 'newLine'},
       ];
-
       assert.deepStrictEqual(await convert(template), exptectedResult);
     });
   });
@@ -697,6 +695,17 @@ me</p>
       {name: "print", data: "456"},
       {name: "newLine"},
     ];
+
+//     const issuet = `
+//     <normal>
+//       <p style="font-weight: bold">1</p>
+//       <div>2</div>
+//     </normal>
+//     <p>3</p>
+// `;
+//
+//     console.log(await convert(issuet));
+//     process.exit(-1);
 
     assert.deepStrictEqual(await convert(template), exptectedResult);
   });

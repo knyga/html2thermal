@@ -87,9 +87,10 @@ const process = async (context, node, depth) => {
     }
   }
   // remove notagHandler if found anything
-  if(handlers.length > 1) {
-    handlers.pop();
-  }
+  // if(handlers.length > 1) {
+  //   handlers.pop();
+  // }
+
   for(let i=0; i<handlers.length; i++) {
     const {before, stackName: handlerStackName, isWithoutClosingTag} = handlers[i];
     const stackName = [null, undefined].includes(handlerStackName) ? nodeGroup.tag : handlerStackName;
@@ -132,6 +133,7 @@ const convert = async (xml) => {
     normalizeWhitespace: true,
     xmlMode: true,
   }).root()[0].children[0];
+
   const nodes = root.children;
   let context = {data: [], commands: [], stack: {}};
   for(let i=0; i<nodes.length; i++) {
@@ -163,9 +165,12 @@ const reduceSanitizeHtml = (sanitizers) => sanitizers.reduce((acc, val) => {
   };
 }, {});
 
+const collabsSpaces = (html) => html.replace(/(<(pre|script|style|textarea|p|div|span)[^]+?<\/\2)|(^|>)\s+|\s+(?=<|$)/g, "$1$3")
+
 module.exports = function(dirtyXml) {
   const sanitizerObject = reduceSanitizeHtml(handlersCollection.map(handler => handler.sanitizeHtml));
-  const cleanXml = sanitizeHtml(dirtyXml, sanitizerObject);
+  const cleanXml = collabsSpaces(sanitizeHtml(dirtyXml, sanitizerObject));
+  console.log(cleanXml);
   // const cleanXml = dirtyXml;
   // const result = convert(cleanXml);
   // console.log('-----');

@@ -1,4 +1,5 @@
 module.exports = {
+  name: 'dirOrPTagsHandler',
   checkIsAllowed: (context, {tag}) => ['div', 'p'].includes(tag),
   after: (context) => {
     context.commands.push({name: 'newLine'});
