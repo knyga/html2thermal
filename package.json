@@ -1,7 +1,7 @@
 {
-  "name": "node-termal-printer-template",
+  "name": "html2thermal",
   "version": "1.0.0",
-  "description": "",
+  "description": "Allows to print custom html on thermal (POS) printer using nodejs on any target platform: linux, windows, osx...",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
@@ -10,8 +10,13 @@
     "type": "git",
     "url": "git+https://github.com/knyga/node-termal-printer-template.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "thermal",
+    "printer",
+    "epson",
+    "star"
+  ],
+  "author": "Oleksandr Knyga <oleksandrknyga@gmail.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/knyga/node-termal-printer-template/issues"
