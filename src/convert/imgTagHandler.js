@@ -1,7 +1,7 @@
 const fs = require('fs');
 const temp = require('temp');
 const download = require('download');
-const sharp = require('sharp');
+const jimp = require('jimp');
 
 // TODO add cache for input path - output path
 
@@ -77,20 +77,25 @@ module.exports = {
             reject();
           } else {
             const path = `${info.path}.png`;
-            let img = sharp(imagePath);
-            if (size !== null) {
-              img = img.resize(size);
-            }
+            jimp.read(imagePath, (err, lenna) => {
+              if(err) {
+                resolve(context);
+              } else {
+                let chain = lenna;
+                if (size !== null) {
+                  chain = chain.resize.apply(chain,
+                    [size.width ? +size.width : jimp.AUTO,
+                      size.height ? +size.height : jimp.AUTO]);
+                }
+                chain.write(path, (err) => {
+                  if(!err) {
+                    context.commands.push({name: 'printImage', data: path, isAwait: true});
+                  }
 
-            try {
-              await img
-                .png()
-                .toFile(path);
-              context.commands.push({name: 'printImage', data: path, isAwait: true});
-              resolve(context);
-            } catch(e) {
-              resolve(context);
-            }
+                  resolve(context);
+                })
+              }
+            });
           }
         });
       } catch (e) {

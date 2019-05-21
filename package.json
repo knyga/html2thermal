@@ -20,6 +20,7 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
     "download": "^7.1.0",
+    "jimp": "^0.6.4",
     "lodash": "^4.17.10",
     "node-thermal-printer": "^4.0.1",
     "sanitize-html": "^1.18.4",
