@@ -1,10 +1,46 @@
 const checkIsStyleBold = require('../utils/checkIsStyleBold');
 
+const collectInnerTags = (node) => {
+  const stack = [node];
+  const tags = {};
+  while(stack.length) {
+    const n = stack.pop();
+    if(n.type === 'tag') {
+      tags[n.name] = true;
+      if(n.children) {
+        for(let i=0; i<n.children.length; i+=1) {
+          stack.push(n.children[i]);
+        }
+      }
+    }
+  }
+
+  return Object.keys(tags);
+};
+
+const getData = (node) => {
+  const stack = [node];
+  const data = [];
+  while(stack.length) {
+    const n = stack.pop();
+    if(n.data) {
+      data.push(n.data);
+    }
+    if(n.children) {
+      for(let i=0; i<n.children.length; i+=1) {
+        stack.push(n.children[i]);
+      }
+    }
+  }
+
+  return data.join('');
+};
+
 const tdTagHandler = {
   isIgnoreOtherHandlers: true,
   checkIsAllowed: (context, {tag}) => tag === 'td',
   checkIsBold: (node) => {
-    if(/<b>.+<\/b>/.test(node.toString()) || checkIsStyleBold(node)) {
+    if(collectInnerTags(node).includes('b') || checkIsStyleBold(node)) {
       return true;
     }
     return false;
@@ -15,7 +51,7 @@ const tdTagHandler = {
       attrs.bold = true;
       delete attrs.style;
     }
-    context.data.push({...attrs, text: node.children[0].data});
+    context.data.push({...attrs, text: getData(node)});
     return context;
   },
   sanitizeHtml: {
