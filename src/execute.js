@@ -1,7 +1,7 @@
 const convert = require('./convert');
 
 module.exports = async (printer, html, isCut = true) => {
-  const commands = await convert(html);
+  const commands = await convert(html, printer.config.characterSet);
 
   for(let i=0;i<commands.length;i++) {
     const {name, data, isAwait, ...attributes} = commands[i];

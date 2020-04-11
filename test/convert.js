@@ -221,6 +221,9 @@ me</p>
     assert.deepStrictEqual(await convert('<cut/>'), [{name: 'cut'}]);
     assert.deepStrictEqual(await convert('<cut />'), [{name: 'cut'}]);
     assert.deepStrictEqual(await convert('<p>1</p><cut />'), [{name: 'print', data: '1'}, {name: 'newLine'}, {name: 'cut'}]);
+    assert.deepStrictEqual(await convert('<p>1</p><cut />', 'CHARSET'), [
+      {name: 'print', data: '1'}, {name: 'newLine'},
+      {name: 'cut'}, { name: 'setCharacterSet', data: 'CHARSET' }]);
   });
 
   it('partialCut works', async () => {
@@ -230,12 +233,20 @@ me</p>
       name: 'print',
       data: '1'
     }, {name: 'newLine'}, {name: 'partialCut'}]);
-    const commands = await convert(`
+    assert.deepStrictEqual(await convert(`
     <p>hello123</p>
     <p>and from this line</p><partialcut /><p>and from this</p>
     <p>hi?</p>
-    `);
-    console.log(commands);
+    `, 'SLOVENIA234'), [ { name: 'print', data: 'hello123' },
+      { name: 'newLine' },
+      { name: 'print', data: 'and from this line' },
+      { name: 'newLine' },
+      { name: 'partialCut' },
+      { name: 'setCharacterSet', data: 'SLOVENIA234' },
+      { name: 'print', data: 'and from this' },
+      { name: 'newLine' },
+      { name: 'print', data: 'hi?' },
+      { name: 'newLine' } ]);
   });
 
   it('beep works', async () => {

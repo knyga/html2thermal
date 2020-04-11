@@ -127,7 +127,7 @@ const process = async (context, node, depth) => {
   return context;
 };
 
-const convert = async (xml) => {
+const convert = async (xml, characterSet) => {
   const wrappedXml = `<root>${xml.replace(/\n/g, '').trim()}`;
   const root = cheerio.load(wrappedXml, {
     normalizeWhitespace: true,
@@ -135,7 +135,7 @@ const convert = async (xml) => {
   }).root()[0].children[0];
 
   const nodes = root.children;
-  let context = {data: [], commands: [], stack: {}};
+  let context = {data: [], commands: [], stack: {}, characterSet};
   for(let i=0; i<nodes.length; i++) {
     const node = nodes[i];
     await process(context, node, 0);
@@ -167,12 +167,12 @@ const reduceSanitizeHtml = (sanitizers) => sanitizers.reduce((acc, val) => {
 
 const collabsSpaces = (html) => html.replace(/(<(pre|script|style|textarea|p|div|span)[^]+?<\/\2)|(^|>)\s+|\s+(?=<|$)/g, "$1$3");
 
-module.exports = function(dirtyXml) {
+module.exports = function(dirtyXml, characterSet) {
   const sanitizerObject = reduceSanitizeHtml(handlersCollection.map(handler => handler.sanitizeHtml));
   const cleanXml = collabsSpaces(sanitizeHtml(dirtyXml, sanitizerObject));
   // const cleanXml = dirtyXml;
   // const result = convert(cleanXml);
   // console.log('-----');
   // console.log(JSON.stringify(result, null, 2));
-  return convert(cleanXml);
+  return convert(cleanXml, characterSet);
 };
