@@ -1,7 +1,7 @@
 module.exports = {
   isWithoutClosingTag: true,
   checkIsAllowed: (context, {tag}) => tag === 'partialcut',
-  after: (context) => {
+  before: (context) => {
     context.commands.push({name: 'partialCut'});
     return context;
   },

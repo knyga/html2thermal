@@ -230,6 +230,12 @@ me</p>
       name: 'print',
       data: '1'
     }, {name: 'newLine'}, {name: 'partialCut'}]);
+    const commands = await convert(`
+    <p>hello123</p>
+    <p>and from this line</p><partialcut /><p>and from this</p>
+    <p>hi?</p>
+    `);
+    console.log(commands);
   });
 
   it('beep works', async () => {

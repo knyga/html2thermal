@@ -1,8 +1,8 @@
 const printer = require('node-thermal-printer');
-const execute = require('./src/execute');
+const execute = require('../src/execute');
 printer.init({
   type: 'epson',
-  interface: 'tcp://192.168.0.59',
+  interface: 'tcp://192.168.192.168',
 });
 
 const template = `
