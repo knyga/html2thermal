@@ -1,6 +1,6 @@
 {
   "name": "html2thermal",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Allows to print custom html on thermal (POS) printer using nodejs on any target platform: linux, windows, osx...",
   "main": "index.js",
   "scripts": {
