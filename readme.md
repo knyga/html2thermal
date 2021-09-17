@@ -1,4 +1,4 @@
-# HTML2Thermal [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENСE) [![CircleCI](https://circleci.com/gh/knyga/html2thermal/tree/master.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/knyga/html2thermal/tree/master)
+# HTML2Thermal [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/knyga/html2thermal/blob/master/LICENCE) [![CircleCI](https://circleci.com/gh/knyga/html2thermal/tree/master.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/knyga/html2thermal/tree/master)
 
 JavaScript library to translate subset of HTML into commands which would be executed on the thermal printer.
 
@@ -146,4 +146,4 @@ execute(printer, template);
 ```
 
 ## Licence
-HTML2Thermal is [MIT licenсed](./LICENСE).
+HTML2Thermal is [MIT licenсed](https://github.com/knyga/html2thermal/blob/master/LICENCE).
