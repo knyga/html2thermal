@@ -128,7 +128,7 @@ If no tag provided, then `print` operation will be executed.
 
 ```JS
 const printer = require('node-thermal-printer')
-const execute = require('html2thermal')
+const {execute} = require('html2thermal')
 printer.init({
   type: 'epson',
   // If you connect over TCP
