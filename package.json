@@ -24,7 +24,6 @@
   "homepage": "https://github.com/knyga/node-termal-printer-template#readme",
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
-    "html2thermal": "^1.0.8",
     "jimp": "^0.16.1",
     "lodash": "^4.17.10",
     "node-thermal-printer": "^4.4.4",
