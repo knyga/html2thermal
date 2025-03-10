@@ -1,6 +1,6 @@
 {
   "name": "html2thermal",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Allows to print custom html on thermal (POS) printer using nodejs on any target platform: linux, windows, osx...",
   "main": "index.js",
   "scripts": {
@@ -23,16 +23,15 @@
   },
   "homepage": "https://github.com/knyga/node-termal-printer-template#readme",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.3",
-    "download": "^7.1.0",
-    "jimp": "^0.16.1",
-    "lodash": "^4.17.10",
-    "node-thermal-printer": "^4.0.1",
-    "sanitize-html": ">=2.3.2",
-    "temp": "^0.9.4"
+    "cheerio": "1.0.0-rc.12",
+    "jimp": "0.16.1",
+    "lodash": "4.17.21",
+    "node-thermal-printer": "4.4.4",
+    "sanitize-html": "2.7.0",
+    "temp": "0.9.4"
   },
   "devDependencies": {
-    "mocha": "^9.2.2",
-    "probe-image-size": "^4.1.1"
+    "mocha": "9.2.2",
+    "probe-image-size": "7.2.3"
   }
 }

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const temp = require('temp');
-const download = require('download');
+const https = require('https');
+const http = require('http');
 const jimp = require('jimp');
 
 // TODO add cache for input path - output path
@@ -25,25 +26,31 @@ const getImage = (attrs) => new Promise((resolve, reject) => {
       }
     });
   } else if (/^https?:\/\/.+/.test(src)) {
-    temp.open('printerimg', async(err, info) => {
+    temp.open('printerimg', (err, info) => {
       if (err) {
         reject();
       } else {
         const path = info.path;
-        let data = null;
-
-        try {
-          data = await download(src);
-        } catch (e) {
-          reject();
-        }
-
-        fs.writeFile(path, data, (err) => {
-          if (err) {
+        const isHttps = src.startsWith('https://');
+        const client = isHttps ? https : http;
+        
+        const fileStream = fs.createWriteStream(path);
+        
+        client.get(src, (response) => {
+          if (response.statusCode !== 200) {
             reject();
-          } else {
-            resolve(path);
+            return;
           }
+          
+          response.pipe(fileStream);
+          
+          fileStream.on('finish', () => {
+            fileStream.close();
+            resolve(path);
+          });
+        }).on('error', (err) => {
+          fs.unlink(path, () => {});
+          reject();
         });
       }
     });
