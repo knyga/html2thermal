@@ -39,6 +39,27 @@ me</p>
 
     assert.deepStrictEqual(await convert(template), exptectedResult);
   });
+  
+  it('section tag works like div tag', async () => {
+    const template = `
+<section>section content</section>
+<div>div content</div>
+<section style="font-weight: bold">bold section</section>
+`;
+
+    const exptectedResult = [
+      {name: 'print', data: 'section content'},
+      {name: 'newLine'},
+      {name: 'print', data: 'div content'},
+      {name: 'newLine'},
+      {name: 'bold', data: true},
+      {name: 'print', data: 'bold section'},
+      {name: 'bold', data: false},
+      {name: 'newLine'},
+    ];
+
+    assert.deepStrictEqual(await convert(template), exptectedResult);
+  });
 
 
   it('has special treatment for simple table', async () => {
